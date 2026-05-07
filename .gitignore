@@ -2,5 +2,7 @@
 .claude/
 migration_manifest.json
 validation_report.json
+script_overview.txt
+interview_talking_points.txt
 __pycache__/
 *.pyc
