@@ -215,6 +215,7 @@ def run_validation(manifest_path=None):
 
     # ── Section 3: Field cross-reference ─────────────────────────────────────
     eng_field_defs = {
+        'Engagement ID':   (ec['eng_id'], lambda e: e['id'],     str),
         'Client':          (ec['client'],  lambda e: e['client'],  str),
         'Engagement Lead': (ec['lead'],    lambda e: e['lead'],    str),
         'Start Date':      (ec['start'],   lambda e: e['start'],   str),
@@ -222,11 +223,12 @@ def run_validation(manifest_path=None):
         'Budget ($)':      (ec['budget'],  lambda e: e['budget'],  normalize_number),
     }
     del_field_defs = {
-        'Assignee':   (dc['assignee'],   lambda d: d['assignee'],   str),
-        'Due Date':   (dc['due_date'],   lambda d: d['due_date'],   str),
-        'Priority':   (dc['priority'],   lambda d: d['priority'],   str),
-        'Est. Hours': (dc['hours'],      lambda d: d['hours'],      normalize_number),
-        'Engagement': (dc['engagement'], lambda d: d['engagement'], str),
+        'Deliverable ID': (dc['del_id'],     lambda d: d['id'],         str),
+        'Assignee':       (dc['assignee'],   lambda d: d['assignee'],   str),
+        'Due Date':       (dc['due_date'],   lambda d: d['due_date'],   str),
+        'Priority':       (dc['priority'],   lambda d: d['priority'],   str),
+        'Est. Hours':     (dc['hours'],      lambda d: d['hours'],      normalize_number),
+        'Engagement':     (dc['engagement'], lambda d: d['engagement'], str),
     }
 
     total_fields = matched_fields = 0
