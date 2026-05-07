@@ -1,0 +1,6 @@
+.env
+.claude/
+migration_manifest.json
+validation_report.json
+__pycache__/
+*.pyc
