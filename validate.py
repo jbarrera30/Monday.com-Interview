@@ -691,14 +691,19 @@ def _write_html(h, checks, rd, s):
 
         sections_html += f'''
         <div style="margin-bottom:32px">
-          <h2 style="font-size:15px;font-weight:700;color:{DARK};margin-bottom:12px;
-                     padding-bottom:6px;border-bottom:2px solid {GREEN}">
-            {sec_num}. {title}
-          </h2>
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tbody>{rows}</tbody>
-          </table>
-          {extra}
+          <div class="sec-header" onclick="toggleSection(this)">
+            <h2 style="font-size:15px;font-weight:700;color:{DARK};margin:0;
+                       transition:color 0.15s">
+              {sec_num}. {title}
+            </h2>
+            <span class="chevron">&#9660;</span>
+          </div>
+          <div class="sec-body">
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:4px">
+              <tbody>{rows}</tbody>
+            </table>
+            {extra}
+          </div>
         </div>'''
 
     fail_banner = ''
@@ -730,6 +735,13 @@ def _write_html(h, checks, rd, s):
     .card .lbl {{ font-size: 12px; color: #777; margin-top: 2px; }}
     .section-wrap {{ background: white; border-radius: 8px; padding: 24px 28px;
                      margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }}
+    .sec-header {{ cursor: pointer; user-select: none; display: flex; align-items: center;
+                   justify-content: space-between; padding-bottom: 6px;
+                   border-bottom: 2px solid {GREEN}; margin-bottom: 12px; }}
+    .sec-header:hover h2 {{ color: {GREEN}; }}
+    .sec-header .chevron {{ font-size: 11px; color: #999; transition: transform 0.2s;
+                            flex-shrink: 0; margin-left: 8px; }}
+    .sec-header.collapsed .chevron {{ transform: rotate(-90deg); }}
   </style>
 </head>
 <body>
@@ -777,6 +789,13 @@ def _write_html(h, checks, rd, s):
     Nexus Consulting Group · Smartsheet → monday.com Migration · {h["run_ts"]}
   </p>
 </div>
+<script>
+  function toggleSection(el) {{
+    el.classList.toggle('collapsed');
+    var body = el.nextElementSibling;
+    body.style.display = body.style.display === 'none' ? '' : 'none';
+  }}
+</script>
 </body>
 </html>'''
 
