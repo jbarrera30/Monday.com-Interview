@@ -20,14 +20,14 @@ API_URL  = 'https://api.monday.com/v2'
 CSV_PATH = os.path.join(os.path.dirname(__file__), 'nexus_smartsheet_export.csv')
 
 ENG_STATUS_MAP = {
-    'Not Started': 'Not started', 'In Progress': 'Active',
-    'Active': 'Active', 'On Hold': 'On hold',
+    'Not Started': 'Not Started', 'In Progress': 'Active',
+    'Active': 'Active', 'On Hold': 'On Hold',
     'Complete': 'Complete', 'Done': 'Complete',
 }
 DEL_STATUS_MAP = {
-    'To Do': 'To do', 'Not Started': 'To do',
-    'In Progress': 'In progress', 'Working on it': 'In progress',
-    'In Review': 'In review', 'Done': 'Done',
+    'To Do': 'To Do', 'Not Started': 'To Do',
+    'In Progress': 'In Progress', 'Working on it': 'In Progress',
+    'In Review': 'In Review', 'Done': 'Done',
 }
 VALID_ENG_STATUSES = set(ENG_STATUS_MAP.values())
 VALID_DEL_STATUSES = set(DEL_STATUS_MAP.values())

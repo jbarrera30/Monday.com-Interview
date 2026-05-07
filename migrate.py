@@ -25,27 +25,27 @@ WS_ID    = 15369712  # Nexus workspace
 # deliverable task vocabulary ("In progress", "Done"). Keep the two maps separate
 # so a Smartsheet "Done" on an engagement maps to "Complete", not "Done".
 ENG_STATUS_MAP = {
-    'Not Started': 'Not started',
+    'Not Started': 'Not Started',
     'In Progress': 'Active',
     'Active':      'Active',
-    'On Hold':     'On hold',
+    'On Hold':     'On Hold',
     'Complete':    'Complete',
     'Done':        'Complete',
 }
 DEL_STATUS_MAP = {
-    'To Do':         'To do',
-    'Not Started':   'To do',
-    'In Progress':   'In progress',
-    'Working on it': 'In progress',
-    'In Review':     'In review',
+    'To Do':         'To Do',
+    'Not Started':   'To Do',
+    'In Progress':   'In Progress',
+    'Working on it': 'In Progress',
+    'In Review':     'In Review',
     'Done':          'Done',
 }
 
 # These indices MUST match the 'labels' dict order passed to create_column.
 # monday.com maps index→label at column-creation time, so a mismatch here
 # will silently write the wrong status to the board.
-ENG_STATUS_IDX = {'Active': 0, 'On hold': 1, 'Not started': 2, 'Complete': 3}
-DEL_STATUS_IDX = {'To do': 0, 'In progress': 1, 'In review': 2, 'Done': 3}
+ENG_STATUS_IDX = {'Active': 0, 'On Hold': 1, 'Not Started': 2, 'Complete': 3}
+DEL_STATUS_IDX = {'To Do': 0, 'In Progress': 1, 'In Review': 2, 'Done': 3}
 
 
 def gql(query: str, variables: dict = None) -> dict:
@@ -153,7 +153,7 @@ def setup_engagements_board() -> tuple:
     bid = create_board('Nexus — Engagements')
 
     eng_status_defaults = json.dumps({
-        'labels': {'0': 'Active', '1': 'On hold', '2': 'Not started', '3': 'Complete'}
+        'labels': {'0': 'Active', '1': 'On Hold', '2': 'Not Started', '3': 'Complete'}
     })
 
     cols = {}
@@ -173,7 +173,7 @@ def setup_deliverables_board() -> tuple:
     bid = create_board('Nexus — Deliverables')
 
     del_status_defaults = json.dumps({
-        'labels': {'0': 'To do', '1': 'In progress', '2': 'In review', '3': 'Done'}
+        'labels': {'0': 'To Do', '1': 'In Progress', '2': 'In Review', '3': 'Done'}
     })
 
     cols = {}
