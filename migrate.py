@@ -6,7 +6,7 @@ Reads nexus_smartsheet_export.csv and creates two monday.com boards:
   - Nexus — Deliverables
 """
 
-import os, csv, json, time
+import os, csv, json, time, argparse
 import requests
 from datetime import datetime
 
@@ -250,6 +250,11 @@ def migrate_deliverables(board_id: str, cols: dict, deliverables: list,
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--keep-manifest', action='store_true',
+                        help='Run the full migration but do not overwrite migration_manifest.json')
+    args = parser.parse_args()
+
     print('=' * 60)
     print('Nexus Consulting Group — Smartsheet → monday.com Migration')
     print('=' * 60)
@@ -262,6 +267,15 @@ def main():
 
     eng_item_map = migrate_engagements(eng_board_id, eng_cols, engagements)
     migrate_deliverables(del_board_id, del_cols, deliverables, engagements)
+
+    print('\n' + '=' * 60)
+    print(f'Migration complete.')
+    print(f'Engagements board id : {eng_board_id}')
+    print(f'Deliverables board id: {del_board_id}')
+
+    if args.keep_manifest:
+        print('Manifest unchanged   : --keep-manifest flag set')
+        return
 
     # Persist all board/column/item IDs so validate.py can target the exact boards
     # created in this run without re-querying the API to discover them.
@@ -277,10 +291,6 @@ def main():
     with open(manifest_path, 'w') as f:
         json.dump(manifest, f, indent=2)
 
-    print('\n' + '=' * 60)
-    print(f'Migration complete.')
-    print(f'Engagements board id : {eng_board_id}')
-    print(f'Deliverables board id: {del_board_id}')
     print(f'Manifest saved to    : migration_manifest.json')
     print('Run validate.py to verify the migration.')
 
