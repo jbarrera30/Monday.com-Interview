@@ -43,6 +43,6 @@ Status values are normalized from Smartsheet vocabulary to monday.com canonical 
 
 ## Validation results
 
-33/33 checks passed · 198/198 fields verified · 100% field accuracy
+38/38 checks passed · 198/198 fields verified · 100% field accuracy
 
 > **Note:** The monday.com API does not support creating Connect Boards columns programmatically. The `Engagement` column on the Deliverables board stores the engagement name as text. To enable native board linking, add a Connect Boards column in the UI pointing to the Engagements board.

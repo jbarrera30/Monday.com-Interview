@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Nexus Consulting Group — Smartsheet to monday.com Migration
-Reads nexus_smartsheet_export.csv and creates two connected boards:
+Reads nexus_smartsheet_export.csv and creates two monday.com boards:
   - Nexus — Engagements
-  - Nexus — Deliverables (linked to Engagements via Connect Boards)
+  - Nexus — Deliverables
 """
 
 import os, csv, json, time
@@ -21,8 +21,8 @@ API_URL  = 'https://api.monday.com/v2'
 CSV_PATH = os.path.join(os.path.dirname(__file__), 'nexus_smartsheet_export.csv')
 WS_ID    = 15369712  # Nexus workspace
 
-# Engagement lifecycle vocabulary ("Active", "On hold") is entirely distinct from
-# deliverable task vocabulary ("In progress", "Done"). Keep the two maps separate
+# Engagement lifecycle vocabulary ("Active", "On Hold") is entirely distinct from
+# deliverable task vocabulary ("In Progress", "Done"). Keep the two maps separate
 # so a Smartsheet "Done" on an engagement maps to "Complete", not "Done".
 ENG_STATUS_MAP = {
     'Not Started': 'Not Started',
@@ -124,8 +124,9 @@ def create_board(name: str) -> str:
 
 
 def _delete_default_item(board_id: str):
-    # monday.com auto-creates a "Task 1" item on every new board. If left in place
-    # it appears in validation as a spurious item, inflating the live count by 1.
+    # monday.com creates "Task 1" asynchronously after board creation returns.
+    # Sleep briefly so the item exists before we query for it.
+    time.sleep(3)
     data = gql(f'{{ boards(ids: [{board_id}]) {{ items_page(limit: 10) {{ items {{ id name }} }} }} }}')
     for item in data['boards'][0]['items_page']['items']:
         if item['name'] == 'Task 1':

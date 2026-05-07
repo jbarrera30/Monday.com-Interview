@@ -256,7 +256,6 @@ def run_validation(manifest_path=None):
     }
 
     total_fields = matched_fields = 0
-    field_results = []
 
     for label, (col_id, src_fn, norm) in eng_field_defs.items():
         mm = []
@@ -270,8 +269,6 @@ def run_validation(manifest_path=None):
             else:
                 mm.append(f'{e["name"]}: expected "{sv}", got "{lv}"')
         n = len(src_engs)
-        field_results.append({'board': 'Engagements', 'field': label,
-                               'matched': n - len(mm), 'total': n, 'mismatches': mm})
         chk(3, f'Engagement {label}: {n-len(mm)}/{n} match', not mm, mm)
 
     for label, (col_id, src_fn, norm) in del_field_defs.items():
@@ -286,11 +283,8 @@ def run_validation(manifest_path=None):
             else:
                 mm.append(f'{d["name"]}: expected "{sv}", got "{lv}"')
         n = len(src_dels)
-        field_results.append({'board': 'Deliverables', 'field': label,
-                               'matched': n - len(mm), 'total': n, 'mismatches': mm})
         chk(3, f'Deliverable {label}: {n-len(mm)}/{n} match', not mm, mm)
 
-    rd['field_results'] = field_results
     rd['total_fields'] = total_fields
     rd['matched_fields'] = matched_fields
 
@@ -308,8 +302,7 @@ def run_validation(manifest_path=None):
             live_ds = live_del_status.get(d['name'], '?')
             deliverable_rows.append({
                 'name': d['name'], 'priority': d['priority'],
-                'expected_status': d['status'], 'live_status': live_ds,
-                'status_ok': live_ds == d['status'],
+                'live_status': live_ds, 'status_ok': live_ds == d['status'],
                 'due_date': d['due_date'], 'assignee': d['assignee'],
                 'hours': d['hours'],
             })
@@ -377,9 +370,9 @@ def run_validation(manifest_path=None):
     # in the source system before the engagement record was formally opened.
     not_started_with_work = []
     for eng in src_engs.values():
-        if eng['status'] == 'Not started':
+        if eng['status'] == 'Not Started':
             for d in src_dels:
-                if d['eng_id'] == eng['id'] and d['status'] in ('Done', 'In progress', 'In review'):
+                if d['eng_id'] == eng['id'] and d['status'] in ('Done', 'In Progress', 'In Review'):
                     not_started_with_work.append(f'{eng["name"]}: "{d["name"]}" is {d["status"]}')
     chk(5, 'Not started engagements have no active or completed deliverables',
         not not_started_with_work, not_started_with_work, advisory=bool(not_started_with_work))
@@ -405,7 +398,6 @@ def run_validation(manifest_path=None):
     all_people = sorted({d['assignee'] for d in src_dels} | {e['lead'] for e in src_engs.values()})
     chk(6, f'{len(all_people)} consultants require monday.com user provisioning',
         True, all_people, advisory=True)
-    rd['people'] = all_people
 
     # Summary
     hard   = [c for c in checks if not c['advisory']]
@@ -553,9 +545,7 @@ def _write_html(h, checks, rd, s):
             return ''
         return 'background:#fff8f0' if advisory else 'background:#fff0f2'
 
-    hard   = [c for c in checks if not c['advisory']]
-    passed = sum(1 for c in hard if c['pass'])
-    failed = [c for c in hard if not c['pass']]
+    failed = [c for c in checks if not c['advisory'] and not c['pass']]
 
     TITLES = {
         1: 'Structural Integrity',
