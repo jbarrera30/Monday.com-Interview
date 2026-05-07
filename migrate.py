@@ -163,6 +163,7 @@ def setup_engagements_board() -> tuple:
     })
 
     cols = {}
+    cols['eng_id']  = add_column(bid, 'Engagement ID',   'text')
     cols['client']  = add_column(bid, 'Client',           'text')
     cols['lead']    = add_column(bid, 'Engagement Lead',  'text')
     cols['start']   = add_column(bid, 'Start Date',       'date')
@@ -186,12 +187,13 @@ def setup_deliverables_board(eng_board_id: str) -> tuple:
     # Storing the engagement name as plain text preserves the relationship for reporting.
     # Post-migration manual step: in the UI, add a Connect Boards column on this board
     # pointing to "Nexus — Engagements" to enable native bidirectional item linking.
-    cols['engagement'] = add_column(bid, 'Engagement',  'text')
-    cols['assignee']   = add_column(bid, 'Assignee',    'text')
-    cols['due_date']   = add_column(bid, 'Due Date',    'date')
-    cols['hours']      = add_column(bid, 'Est. Hours',  'numbers')
-    cols['priority']   = add_column(bid, 'Priority',    'text')
-    cols['status']     = add_column(bid, 'Status',      'status', del_status_defaults)
+    cols['del_id']     = add_column(bid, 'Deliverable ID', 'text')
+    cols['engagement'] = add_column(bid, 'Engagement',    'text')
+    cols['assignee']   = add_column(bid, 'Assignee',      'text')
+    cols['due_date']   = add_column(bid, 'Due Date',      'date')
+    cols['hours']      = add_column(bid, 'Est. Hours',    'numbers')
+    cols['priority']   = add_column(bid, 'Priority',      'text')
+    cols['status']     = add_column(bid, 'Status',        'status', del_status_defaults)
 
     return bid, cols
 
@@ -218,6 +220,7 @@ def migrate_engagements(board_id: str, cols: dict, engagements: dict) -> dict:
 
     for eng in engagements.values():
         col_values = {
+            cols['eng_id']:  eng['id'],
             cols['client']:  eng['client'],
             cols['lead']:    eng['lead'],
             cols['start']:   {'date': eng['start']},
@@ -240,6 +243,7 @@ def migrate_deliverables(board_id: str, cols: dict, deliverables: list,
     for d in deliverables:
         eng_name = engagements[d['engagement']]['name']
         col_values = {
+            cols['del_id']:     d['id'],
             cols['engagement']: eng_name,
             cols['assignee']:   d['assignee'],
             cols['due_date']:   {'date': d['due_date']},
