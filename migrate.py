@@ -22,7 +22,9 @@ CSV_PATH = os.path.join(os.path.dirname(__file__), 'nexus_smartsheet_export.csv'
 WS_ID    = 15369712  # Nexus workspace
 
 # ── Status normalization ──────────────────────────────────────────────────────
-# Source Smartsheet values → canonical monday.com labels
+# Engagement lifecycle vocabulary ("Active", "On hold") is entirely distinct from
+# deliverable task vocabulary ("In progress", "Done"). Keep the two maps separate
+# so a Smartsheet "Done" on an engagement maps to "Complete", not "Done".
 ENG_STATUS_MAP = {
     'Not Started': 'Not started',
     'In Progress': 'Active',
@@ -40,7 +42,9 @@ DEL_STATUS_MAP = {
     'Done':         'Done',
 }
 
-# Label → status column index (must match the settings_str used at column creation)
+# These indices MUST match the 'labels' dict order passed to create_column via
+# settings_str. monday.com maps index→label at column-creation time, so any
+# mismatch here will silently write the wrong status color to the board.
 ENG_STATUS_IDX = {'Active': 0, 'On hold': 1, 'Not started': 2, 'Complete': 3}
 DEL_STATUS_IDX = {'To do': 0, 'In progress': 1, 'In review': 2, 'Done': 3}
 
@@ -52,6 +56,8 @@ def gql(query: str, variables: dict = None) -> dict:
         'Content-Type':  'application/json',
         'API-Version':   '2024-01',
     }
+    # Exponential backoff capped at 60s. monday.com's rate-limit windows are short,
+    # so 8 attempts with a 60s ceiling covers any burst without hanging indefinitely.
     for attempt in range(8):
         r = requests.post(API_URL, json={'query': query, 'variables': variables or {}}, headers=headers)
         if r.status_code == 429:
@@ -77,6 +83,8 @@ def load_csv() -> tuple:
     engagements: dict = {}
     deliverables: list = []
 
+    # The flat CSV repeats engagement-level fields on every deliverable row.
+    # Deduplicate on first encounter so only one board item is created per engagement.
     with open(CSV_PATH, newline='', encoding='utf-8') as f:
         for row in csv.DictReader(f):
             eid = row['engagement_id']
@@ -122,6 +130,8 @@ def create_board(name: str) -> str:
 
 def _delete_default_item(board_id: str):
     """Delete the 'Task 1' placeholder monday.com adds to new boards."""
+    # monday.com auto-creates a "Task 1" item on every new board. If left in place
+    # it appears in validation as a spurious item, inflating the live count by 1.
     data = gql(f'{{ boards(ids: [{board_id}]) {{ items_page(limit: 10) {{ items {{ id name }} }} }} }}')
     for item in data['boards'][0]['items_page']['items']:
         if item['name'] == 'Task 1':
@@ -140,7 +150,7 @@ def add_column(board_id: str, title: str, col_type: str, defaults: str = None) -
     ''')
     col_id = data['create_column']['id']
     print(f'    + column "{title}" ({col_type}) → {col_id}')
-    time.sleep(1.0)  # avoid rate limiting between column creations
+    time.sleep(1.0)  # column creation hits a stricter rate limit than item creation
     return col_id
 
 
@@ -172,9 +182,10 @@ def setup_deliverables_board(eng_board_id: str) -> tuple:
     })
 
     cols = {}
-    # NOTE: monday.com's API does not support creating Connect Boards columns programmatically.
-    # We store the engagement name as text here. Post-migration, manually add a Connect Boards
-    # column in the UI pointing to "Nexus — Engagements" to enable native board linking.
+    # The monday.com API does not support creating Connect Boards columns programmatically.
+    # Storing the engagement name as plain text preserves the relationship for reporting.
+    # Post-migration manual step: in the UI, add a Connect Boards column on this board
+    # pointing to "Nexus — Engagements" to enable native bidirectional item linking.
     cols['engagement'] = add_column(bid, 'Engagement',  'text')
     cols['assignee']   = add_column(bid, 'Assignee',    'text')
     cols['due_date']   = add_column(bid, 'Due Date',    'date')
@@ -203,7 +214,7 @@ def create_item(board_id: str, name: str, col_values: dict) -> str:
 # ── Migration ─────────────────────────────────────────────────────────────────
 def migrate_engagements(board_id: str, cols: dict, engagements: dict) -> dict:
     print('\n[3/4] Migrating engagements…')
-    eng_item_map = {}  # engagement_id → monday item_id
+    eng_item_map = {}  # engagement_id → monday item_id; persisted in manifest for validate.py
 
     for eng in engagements.values():
         col_values = {
@@ -256,6 +267,8 @@ def main():
     eng_item_map = migrate_engagements(eng_board_id, eng_cols, engagements)
     migrate_deliverables(del_board_id, del_cols, deliverables, eng_item_map, engagements)
 
+    # Persist all board/column/item IDs so validate.py can target the exact boards
+    # created in this run without re-querying the API to discover them.
     manifest = {
         'eng_board_id':  eng_board_id,
         'del_board_id':  del_board_id,

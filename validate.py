@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Nexus Consulting Group — Migration Validation
-Produces: console output + validation_report.html + validation_report.md + validation_report.json
+Produces: console output + validation_report.html + validation_report.json
 """
 
 import os, csv, json, re
@@ -36,6 +36,8 @@ DONE_STATUSES      = {'Done', 'Complete'}
 
 # ── API ───────────────────────────────────────────────────────────────────────
 def gql(query, variables=None):
+    # No retry here — validate is read-only. A transient 429 should surface
+    # immediately so the operator knows to wait before re-running the check.
     headers = {'Authorization': TOKEN, 'Content-Type': 'application/json', 'API-Version': '2024-01'}
     r = requests.post(API_URL, json={'query': query, 'variables': variables or {}}, headers=headers)
     r.raise_for_status()
@@ -46,6 +48,8 @@ def gql(query, variables=None):
 
 
 def fetch_items(board_id):
+    # monday.com caps item_page results at 100 per request. Cursor-based pagination
+    # loops until the API returns no cursor, collecting all items regardless of board size.
     items, cursor = [], None
     while True:
         ca = f', cursor: "{cursor}"' if cursor else ''
@@ -62,11 +66,14 @@ def fetch_items(board_id):
 def col_text(item, col_id):
     for c in item['column_values']:
         if c['id'] == col_id:
+            # API returns None (not '') for columns that have never been written to.
             return (c.get('text') or '').strip()
     return ''
 
 
 def normalize_number(raw):
+    # monday.com returns numbers as formatted strings ("$125,000"), while the CSV
+    # stores raw integers. Strip currency symbols, commas, and spaces before comparing.
     try:
         return str(int(float(re.sub(r'[,$\s]', '', raw))))
     except (ValueError, TypeError):
@@ -99,6 +106,8 @@ def load_csv():
                 'priority': row['priority'], 'hours': str(int(row['hours_estimated'])),
                 'status': DEL_STATUS_MAP[row['deliverable_status'].strip()],
             })
+    # Second pass: detect rows where the same engagement_id carries conflicting field
+    # values — a source-data quality problem that would produce an unreliable migration.
     seen, inconsistencies = {}, []
     with open(CSV_PATH, newline='', encoding='utf-8') as f:
         for row in csv.DictReader(f):
@@ -137,9 +146,11 @@ def run_validation(manifest_path=None):
     run_ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     checks   = []   # {section, label, pass, advisory, detail}
-    rd       = {}   # rich data for rendering
+    rd       = {}   # rich data: aggregates and structured rows shared between console and HTML renderers
 
     def chk(section, label, passed, detail=None, advisory=False):
+        # advisory=True: finding is informational and excluded from the pass-rate calculation.
+        # Use for known non-errors (historical overdue items, user provisioning reminders).
         checks.append({'section': section, 'label': label, 'pass': passed,
                        'advisory': advisory, 'detail': detail or []})
 
@@ -297,6 +308,8 @@ def run_validation(manifest_path=None):
 
     overdue = [f'{d["name"]} (due {d["due_date"]}, {d["assignee"]}, {d["status"]})'
                for d in src_dels if d['due_date'] < today and d['status'] not in DONE_STATUSES]
+    # Advisory: these items were past their due date in the source data before migration.
+    # They indicate a pre-existing business issue, not a migration data-integrity problem.
     chk(5, f'Overdue open deliverables: {len(overdue)} flagged (historical data)',
         not overdue, overdue, advisory=bool(overdue))
 
@@ -316,6 +329,9 @@ def run_validation(manifest_path=None):
     rd['overdue']           = overdue
 
     # ── Section 6: People ─────────────────────────────────────────────────────
+    # monday.com has no public API to verify user account existence. This advisory
+    # lists every unique person from the data so the admin knows which accounts to
+    # create before reassigning items from text fields to real monday.com users.
     all_people = sorted({d['assignee'] for d in src_dels} | {e['lead'] for e in src_engs.values()})
     chk(6, f'{len(all_people)} consultants require monday.com user provisioning',
         True, all_people, advisory=True)
