@@ -32,9 +32,9 @@ DEL_STATUS_MAP = {
 VALID_ENG_STATUSES = set(ENG_STATUS_MAP.values())
 VALID_DEL_STATUSES = set(DEL_STATUS_MAP.values())
 DONE_STATUSES      = {'Done', 'Complete'}
+VALID_PRIORITIES   = {'High', 'Medium', 'Low'}
 
 
-# ── API ───────────────────────────────────────────────────────────────────────
 def gql(query, variables=None):
     # No retry here — validate is read-only. A transient 429 should surface
     # immediately so the operator knows to wait before re-running the check.
@@ -80,7 +80,6 @@ def normalize_number(raw):
         return raw.strip()
 
 
-# ── CSV ───────────────────────────────────────────────────────────────────────
 def fmt_date(raw):
     return datetime.strptime(raw.strip(), '%m/%d/%Y').strftime('%Y-%m-%d')
 
@@ -106,6 +105,7 @@ def load_csv():
                 'priority': row['priority'], 'hours': str(int(row['hours_estimated'])),
                 'status': DEL_STATUS_MAP[row['deliverable_status'].strip()],
             })
+
     # Second pass: detect rows where the same engagement_id carries conflicting field
     # values — a source-data quality problem that would produce an unreliable migration.
     seen, inconsistencies = {}, []
@@ -117,10 +117,10 @@ def load_csv():
             if eid in seen and seen[eid] != snap:
                 inconsistencies.append(eid)
             seen[eid] = snap
+
     return engagements, deliverables, inconsistencies
 
 
-# ── Validation ────────────────────────────────────────────────────────────────
 def run_validation(manifest_path=None):
     if manifest_path is None:
         manifest_path = os.path.join(os.path.dirname(__file__), 'migration_manifest.json')
@@ -142,19 +142,18 @@ def run_validation(manifest_path=None):
 
     live_engs = {i['name']: i for i in eng_items}
     live_dels = {i['name']: i for i in del_items}
-    today = date.today().isoformat()
     run_ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    checks   = []   # {section, label, pass, advisory, detail}
-    rd       = {}   # rich data: aggregates and structured rows shared between console and HTML renderers
+    checks = []  # {section, label, pass, advisory, detail}
+    rd     = {}  # aggregates and structured rows shared between console and HTML renderers
 
     def chk(section, label, passed, detail=None, advisory=False):
         # advisory=True: finding is informational and excluded from the pass-rate calculation.
-        # Use for known non-errors (historical overdue items, user provisioning reminders).
+        # Use for known non-errors (user provisioning reminders, etc.)
         checks.append({'section': section, 'label': label, 'pass': passed,
                        'advisory': advisory, 'detail': detail or []})
 
-    # ── Section 1: Structural ─────────────────────────────────────────────────
+    # --- Section 1: Structural Integrity ---
     src_eng_names  = {e['name'] for e in src_engs.values()}
     src_del_names  = {d['name'] for d in src_dels}
     live_eng_names = {i['name'] for i in eng_items}
@@ -164,30 +163,49 @@ def run_validation(manifest_path=None):
         len(eng_items) == len(src_engs))
     chk(1, f'Deliverable count matches (expected {len(src_dels)}, live {len(del_items)})',
         len(del_items) == len(src_dels))
+
     missing_engs = src_eng_names - live_eng_names
     chk(1, f'All {len(src_engs)} CSV engagements present in monday.com',
         not missing_engs, [f'Missing: {n}' for n in sorted(missing_engs)])
+
+    extra_engs = live_eng_names - src_eng_names
+    chk(1, 'No extra engagements in monday.com (not in CSV)',
+        not extra_engs, [f'Extra: {n}' for n in sorted(extra_engs)])
+
     missing_dels = src_del_names - live_del_names
     chk(1, f'All {len(src_dels)} CSV deliverables present in monday.com',
         not missing_dels, [f'Missing: {n}' for n in sorted(missing_dels)])
+
     extra_dels = live_del_names - src_del_names
     chk(1, 'No extra deliverables in monday.com (not in CSV)',
         not extra_dels, [f'Extra: {n}' for n in sorted(extra_dels)])
+
     dup_engs = [n for n, c in {i['name']: sum(1 for j in eng_items if j['name'] == i['name'])
                                 for i in eng_items}.items() if c > 1]
     chk(1, 'No duplicate engagement names', not dup_engs, dup_engs)
+
     dup_dels = [n for n, c in {i['name']: sum(1 for j in del_items if j['name'] == i['name'])
                                 for i in del_items}.items() if c > 1]
     chk(1, 'No duplicate deliverable names', not dup_dels, dup_dels)
+
     orphans = [i['name'] for i in del_items if not col_text(i, dc['engagement'])]
     chk(1, 'No orphan deliverables (all have engagement reference)', not orphans, orphans)
+
+    # Confirm each deliverable's engagement reference names an actual engagement
+    invalid_refs = [i['name'] for i in del_items
+                    if col_text(i, dc['engagement']) and
+                    col_text(i, dc['engagement']) not in src_eng_names]
+    chk(1, 'All deliverable engagement references point to a valid engagement',
+        not invalid_refs, invalid_refs)
+
     chk(1, 'Engagement fields consistent across all CSV rows',
         not src_inconsistencies, [f'Inconsistent: {e}' for e in src_inconsistencies])
 
-    # ── Section 2: Status ─────────────────────────────────────────────────────
+    # --- Section 2: Status Validation ---
     bad_eng_s = [f'{i["name"]}: "{col_text(i, ec["status"])}"' for i in eng_items
                  if col_text(i, ec['status']) not in VALID_ENG_STATUSES]
     chk(2, f'All {len(eng_items)} engagement statuses are canonical', not bad_eng_s, bad_eng_s)
+
     bad_del_s = [f'{i["name"]}: "{col_text(i, dc["status"])}"' for i in del_items
                  if col_text(i, dc['status']) not in VALID_DEL_STATUSES]
     chk(2, f'All {len(del_items)} deliverable statuses are canonical', not bad_del_s, bad_del_s)
@@ -213,14 +231,14 @@ def run_validation(manifest_path=None):
     rd['eng_dist'] = eng_dist
     rd['del_dist'] = del_dist
 
-    # ── Section 3: Field cross-reference ─────────────────────────────────────
+    # --- Section 3: Field-Level Cross-Reference ---
     eng_field_defs = {
-        'Engagement ID':   (ec['eng_id'], lambda e: e['id'],     str),
-        'Client':          (ec['client'],  lambda e: e['client'],  str),
-        'Engagement Lead': (ec['lead'],    lambda e: e['lead'],    str),
-        'Start Date':      (ec['start'],   lambda e: e['start'],   str),
-        'End Date':        (ec['end'],     lambda e: e['end'],     str),
-        'Budget ($)':      (ec['budget'],  lambda e: e['budget'],  normalize_number),
+        'Engagement ID':   (ec['eng_id'], lambda e: e['id'],      str),
+        'Client':          (ec['client'], lambda e: e['client'],   str),
+        'Engagement Lead': (ec['lead'],   lambda e: e['lead'],     str),
+        'Start Date':      (ec['start'],  lambda e: e['start'],    str),
+        'End Date':        (ec['end'],    lambda e: e['end'],      str),
+        'Budget ($)':      (ec['budget'], lambda e: e['budget'],   normalize_number),
     }
     del_field_defs = {
         'Deliverable ID': (dc['del_id'],     lambda d: d['id'],         str),
@@ -270,7 +288,7 @@ def run_validation(manifest_path=None):
     rd['total_fields'] = total_fields
     rd['matched_fields'] = matched_fields
 
-    # ── Section 4: Drill-down ─────────────────────────────────────────────────
+    # --- Section 4: Engagement Drill-Down ---
     dels_by_eng = defaultdict(list)
     for d in src_dels:
         dels_by_eng[d['eng_id']].append(d)
@@ -282,13 +300,12 @@ def run_validation(manifest_path=None):
         deliverable_rows = []
         for d in eng_dels:
             live_ds = live_del_status.get(d['name'], '?')
-            overdue = d['due_date'] < today and d['status'] not in DONE_STATUSES
             deliverable_rows.append({
                 'name': d['name'], 'priority': d['priority'],
                 'expected_status': d['status'], 'live_status': live_ds,
                 'status_ok': live_ds == d['status'],
                 'due_date': d['due_date'], 'assignee': d['assignee'],
-                'hours': d['hours'], 'overdue': overdue,
+                'hours': d['hours'],
             })
         drilldown.append({
             'id': eng['id'], 'name': eng['name'], 'client': eng['client'],
@@ -302,18 +319,27 @@ def run_validation(manifest_path=None):
         })
     rd['drilldown'] = drilldown
 
-    # ── Section 5: Data quality ───────────────────────────────────────────────
+    # --- Section 5: Data Quality ---
+    no_client = [e['name'] for e in src_engs.values() if not e['client'].strip()]
+    chk(5, 'No engagements missing client', not no_client, no_client)
+
+    no_lead = [e['name'] for e in src_engs.values() if not e['lead'].strip()]
+    chk(5, 'No engagements missing lead', not no_lead, no_lead)
+
     no_assignee = [d['name'] for d in src_dels if not d['assignee'].strip()]
     chk(5, 'No deliverables missing assignee', not no_assignee, no_assignee)
+
     no_due = [d['name'] for d in src_dels if not d['due_date'].strip()]
     chk(5, 'No deliverables missing due date', not no_due, no_due)
 
-    overdue = [f'{d["name"]} (due {d["due_date"]}, {d["assignee"]}, {d["status"]})'
-               for d in src_dels if d['due_date'] < today and d['status'] not in DONE_STATUSES]
-    # Advisory: these items were past their due date in the source data before migration.
-    # They indicate a pre-existing business issue, not a migration data-integrity problem.
-    chk(5, f'Overdue open deliverables: {len(overdue)} flagged (historical data)',
-        not overdue, overdue, advisory=bool(overdue))
+    bad_dates = [f'{e["name"]}: start {e["start"]} ≥ end {e["end"]}'
+                 for e in src_engs.values() if e['start'] >= e['end']]
+    chk(5, 'All engagement date ranges are valid (start before end)', not bad_dates, bad_dates)
+
+    bad_priority = [f'{d["name"]}: "{d["priority"]}"'
+                    for d in src_dels if d['priority'] not in VALID_PRIORITIES]
+    chk(5, 'All deliverable priorities are valid (High / Medium / Low)',
+        not bad_priority, bad_priority)
 
     total_budget = sum(int(e['budget']) for e in src_engs.values())
     total_hours  = sum(int(d['hours']) for d in src_dels)
@@ -324,13 +350,12 @@ def run_validation(manifest_path=None):
     for d in src_dels:
         hours_by_person[d['assignee']] += int(d['hours'])
 
-    rd['total_budget']      = total_budget
-    rd['total_hours']       = total_hours
-    rd['budget_by_status']  = dict(sorted(budget_by_status.items()))
-    rd['hours_by_person']   = dict(sorted(hours_by_person.items(), key=lambda x: -x[1]))
-    rd['overdue']           = overdue
+    rd['total_budget']     = total_budget
+    rd['total_hours']      = total_hours
+    rd['budget_by_status'] = dict(sorted(budget_by_status.items()))
+    rd['hours_by_person']  = dict(sorted(hours_by_person.items(), key=lambda x: -x[1]))
 
-    # ── Section 6: People ─────────────────────────────────────────────────────
+    # --- Section 6: People Provisioning ---
     # monday.com has no public API to verify user account existence. This advisory
     # lists every unique person from the data so the admin knows which accounts to
     # create before reassigning items from text fields to real monday.com users.
@@ -339,7 +364,7 @@ def run_validation(manifest_path=None):
         True, all_people, advisory=True)
     rd['people'] = all_people
 
-    # ── Summary ───────────────────────────────────────────────────────────────
+    # Summary
     hard   = [c for c in checks if not c['advisory']]
     passed = sum(1 for c in hard if c['pass'])
     pct    = 100 * matched_fields // total_fields if total_fields else 0
@@ -357,7 +382,6 @@ def run_validation(manifest_path=None):
         'field_pct': pct,
     }
 
-    # ── Render ────────────────────────────────────────────────────────────────
     _print_console(header, checks, rd, summary)
     _write_html(header, checks, rd, summary)
 
@@ -373,12 +397,16 @@ def run_validation(manifest_path=None):
     return report
 
 
-# ── Console renderer ──────────────────────────────────────────────────────────
 def _print_console(h, checks, rd, s):
     W = 68
-    TITLES = {1:'STRUCTURAL INTEGRITY', 2:'STATUS VALIDATION',
-               3:'FIELD-LEVEL CROSS-REFERENCE', 4:'ENGAGEMENT DRILL-DOWN',
-               5:'DATA QUALITY FLAGS', 6:'PEOPLE PROVISIONING (advisory)'}
+    TITLES = {
+        1: 'STRUCTURAL INTEGRITY',
+        2: 'STATUS VALIDATION',
+        3: 'FIELD-LEVEL CROSS-REFERENCE',
+        4: 'ENGAGEMENT DRILL-DOWN',
+        5: 'DATA QUALITY FLAGS',
+        6: 'PEOPLE PROVISIONING (advisory)',
+    }
 
     print()
     print('=' * W)
@@ -397,8 +425,6 @@ def _print_console(h, checks, rd, s):
             print(f'\n{"─" * W}')
             print(f'  {cur_section} · {TITLES[cur_section]}')
             print(f'{"─" * W}')
-            if cur_section == 2:
-                pass  # distributions printed inline below
         icon = '✓' if c['pass'] else ('⚠' if c['advisory'] else '✗')
         print(f'  {icon}  {c["label"]}')
         for d in c['detail'][:10]:
@@ -406,10 +432,6 @@ def _print_console(h, checks, rd, s):
         if len(c['detail']) > 10:
             print(f'       … and {len(c["detail"]) - 10} more')
 
-        if c['section'] == 2 and 'distribution' not in c['label'].lower():
-            pass
-
-    # Status distributions
     print(f'\n{"─" * W}')
     print('  Status distributions')
     print(f'{"─" * W}')
@@ -424,7 +446,6 @@ def _print_console(h, checks, rd, s):
 
     print(f'\n  Field accuracy: {s["fields_matched"]}/{s["fields_total"]} data points ({s["field_pct"]}%)')
 
-    # Drill-down
     print(f'\n{"─" * W}')
     print('  Engagement drill-down')
     print(f'{"─" * W}')
@@ -437,11 +458,9 @@ def _print_console(h, checks, rd, s):
         print(f'         Deliverables: {eng["total"]} total  ·  {eng["done"]} done  ·  {eng["hours"]} h')
         for d in eng['deliverables']:
             ok = '✓' if d['status_ok'] else '✗'
-            ov = ' ⚠ OVERDUE' if d['overdue'] else ''
             print(f'           {ok}  [{d["priority"]:<6}] {d["name"]:<42}'
-                  f'  {d["live_status"]:<14}  {d["due_date"]}{ov}')
+                  f'  {d["live_status"]:<14}  {d["due_date"]}')
 
-    # Budget + hours
     print(f'\n{"─" * W}')
     print('  Budget reconciliation')
     print(f'{"─" * W}')
@@ -453,7 +472,6 @@ def _print_console(h, checks, rd, s):
         print(f'    {person:<24}  {hrs:>4} h')
     print(f'    {"TOTAL":<24}  {rd["total_hours"]:>4} h')
 
-    # Summary
     hard = [c for c in checks if not c['advisory']]
     passed = sum(1 for c in hard if c['pass'])
     failed = [c for c in hard if not c['pass']]
@@ -473,7 +491,6 @@ def _print_console(h, checks, rd, s):
     print('=' * W)
 
 
-# ── HTML renderer ─────────────────────────────────────────────────────────────
 def _write_html(h, checks, rd, s):
     GREEN  = '#00a650'
     RED    = '#e2445c'
@@ -489,28 +506,31 @@ def _write_html(h, checks, rd, s):
         return f'<span style="color:{RED};font-weight:600">✗ Fail</span>'
 
     def row_bg(passed, advisory=False):
-        if passed: return ''
-        if advisory: return f'background:#fff8f0'
-        return f'background:#fff0f2'
+        if passed:
+            return ''
+        return 'background:#fff8f0' if advisory else 'background:#fff0f2'
 
     hard   = [c for c in checks if not c['advisory']]
     passed = sum(1 for c in hard if c['pass'])
     failed = [c for c in hard if not c['pass']]
 
-    TITLES = {1:'Structural Integrity', 2:'Status Validation',
-               3:'Field-Level Cross-Reference', 4:'Engagement Drill-Down',
-               5:'Data Quality Flags', 6:'People Provisioning'}
+    TITLES = {
+        1: 'Structural Integrity',
+        2: 'Status Validation',
+        3: 'Field-Level Cross-Reference',
+        4: 'Engagement Drill-Down',
+        5: 'Data Quality Flags',
+        6: 'People Provisioning',
+    }
 
-    sections_html = ''
-    cur = None
     section_checks = defaultdict(list)
     for c in checks:
         section_checks[c['section']].append(c)
 
+    sections_html = ''
     for sec_num, title in TITLES.items():
-        sec_checks = section_checks[sec_num]
         rows = ''
-        for c in sec_checks:
+        for c in section_checks[sec_num]:
             detail_html = ''
             if c['detail']:
                 items = ''.join(f'<li>{d}</li>' for d in c['detail'])
@@ -525,49 +545,48 @@ def _write_html(h, checks, rd, s):
 
         extra = ''
         if sec_num == 2:
-            def dist_table(title, dist):
-                rows = ''.join(
-                    f'<tr><td style="padding:5px 10px">'
-                    f'{"✓" if a==b else "✗"} {s}</td>'
+            def dist_table(label, dist):
+                dist_rows = ''.join(
+                    f'<tr><td style="padding:5px 10px">{"✓" if a==b else "✗"} {st}</td>'
                     f'<td style="padding:5px 10px;text-align:center">{a}</td>'
                     f'<td style="padding:5px 10px;text-align:center">{b}</td></tr>'
-                    for s, (a, b) in dist.items()
+                    for st, (a, b) in dist.items()
                 )
                 return f'''
                 <div style="margin-top:16px">
-                  <p style="font-weight:600;margin-bottom:6px">{title}</p>
+                  <p style="font-weight:600;margin-bottom:6px">{label}</p>
                   <table style="border-collapse:collapse;font-size:13px;width:auto">
                     <thead><tr style="background:{GREY}">
                       <th style="padding:5px 10px;text-align:left">Status</th>
                       <th style="padding:5px 10px">CSV</th>
                       <th style="padding:5px 10px">Live</th>
                     </tr></thead>
-                    <tbody>{rows}</tbody>
+                    <tbody>{dist_rows}</tbody>
                   </table>
                 </div>'''
             extra = dist_table('Engagements', rd['eng_dist']) + dist_table('Deliverables', rd['del_dist'])
 
         if sec_num == 3:
-            extra = f'<p style="margin-top:12px;font-weight:600;color:{GREEN}">' \
-                    f'Field accuracy: {s["fields_matched"]}/{s["fields_total"]} data points ({s["field_pct"]}%)</p>'
+            extra = (f'<p style="margin-top:12px;font-weight:600;color:{GREEN}">'
+                     f'Field accuracy: {s["fields_matched"]}/{s["fields_total"]} '
+                     f'data points ({s["field_pct"]}%)</p>')
 
         if sec_num == 4:
             eng_rows = ''
             for eng in rd['drilldown']:
-                sk = f'<span style="color:{GREEN if eng["status_ok"] else RED}">' \
-                     f'{"✓" if eng["status_ok"] else "✗"}</span>'
+                sk = (f'<span style="color:{GREEN if eng["status_ok"] else RED}">'
+                      f'{"✓" if eng["status_ok"] else "✗"}</span>')
                 del_rows = ''
                 for d in eng['deliverables']:
                     ok_c = GREEN if d['status_ok'] else RED
-                    ov_badge = f' <span style="color:{ORANGE};font-size:11px">⚠ OVERDUE</span>' if d['overdue'] else ''
                     del_rows += f'''
-                    <tr style="{'background:#fff8f0' if d['overdue'] else ''}">
+                    <tr>
                       <td style="padding:4px 8px;font-size:12px;color:{ok_c}">
                         {"✓" if d["status_ok"] else "✗"}</td>
                       <td style="padding:4px 8px;font-size:12px">{d["name"]}</td>
                       <td style="padding:4px 8px;font-size:12px">{d["priority"]}</td>
                       <td style="padding:4px 8px;font-size:12px">{d["live_status"]}</td>
-                      <td style="padding:4px 8px;font-size:12px">{d["due_date"]}{ov_badge}</td>
+                      <td style="padding:4px 8px;font-size:12px">{d["due_date"]}</td>
                       <td style="padding:4px 8px;font-size:12px">{d["assignee"]}</td>
                       <td style="padding:4px 8px;font-size:12px;text-align:right">{d["hours"]} h</td>
                     </tr>'''
@@ -604,15 +623,17 @@ def _write_html(h, checks, rd, s):
                 f'<td style="padding:5px 10px;text-align:right">${amt:,}</td></tr>'
                 for st, amt in rd['budget_by_status'].items()
             )
-            brows += f'<tr style="font-weight:600;background:{GREY}"><td style="padding:5px 10px">TOTAL</td>' \
-                     f'<td style="padding:5px 10px;text-align:right">${rd["total_budget"]:,}</td></tr>'
+            brows += (f'<tr style="font-weight:600;background:{GREY}">'
+                      f'<td style="padding:5px 10px">TOTAL</td>'
+                      f'<td style="padding:5px 10px;text-align:right">${rd["total_budget"]:,}</td></tr>')
             hrows = ''.join(
                 f'<tr><td style="padding:5px 10px">{p}</td>'
                 f'<td style="padding:5px 10px;text-align:right">{hrs} h</td></tr>'
                 for p, hrs in rd['hours_by_person'].items()
             )
-            hrows += f'<tr style="font-weight:600;background:{GREY}"><td style="padding:5px 10px">TOTAL</td>' \
-                     f'<td style="padding:5px 10px;text-align:right">{rd["total_hours"]} h</td></tr>'
+            hrows += (f'<tr style="font-weight:600;background:{GREY}">'
+                      f'<td style="padding:5px 10px">TOTAL</td>'
+                      f'<td style="padding:5px 10px;text-align:right">{rd["total_hours"]} h</td></tr>')
             extra = f'''
             <div style="display:flex;gap:32px;margin-top:16px;flex-wrap:wrap">
               <div>
@@ -650,10 +671,10 @@ def _write_html(h, checks, rd, s):
     fail_banner = ''
     if failed:
         items = ''.join(f'<li>{c["label"]}</li>' for c in failed)
-        fail_banner = f'<div style="background:#fff0f2;border-left:4px solid {RED};' \
-                      f'padding:12px 16px;margin-bottom:24px;border-radius:4px">' \
-                      f'<strong>Issues requiring attention:</strong><ul style="margin:8px 0 0 16px">' \
-                      f'{items}</ul></div>'
+        fail_banner = (f'<div style="background:#fff0f2;border-left:4px solid {RED};'
+                       f'padding:12px 16px;margin-bottom:24px;border-radius:4px">'
+                       f'<strong>Issues requiring attention:</strong>'
+                       f'<ul style="margin:8px 0 0 16px">{items}</ul></div>')
 
     html = f'''<!DOCTYPE html>
 <html lang="en">
@@ -676,8 +697,6 @@ def _write_html(h, checks, rd, s):
     .card .lbl {{ font-size: 12px; color: #777; margin-top: 2px; }}
     .section-wrap {{ background: white; border-radius: 8px; padding: 24px 28px;
                      margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }}
-    .fail-summary {{ background: #fff0f2; border-left: 4px solid {RED};
-                     padding: 14px 18px; border-radius: 4px; margin-bottom: 24px; }}
   </style>
 </head>
 <body>

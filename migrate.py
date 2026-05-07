@@ -21,7 +21,6 @@ API_URL  = 'https://api.monday.com/v2'
 CSV_PATH = os.path.join(os.path.dirname(__file__), 'nexus_smartsheet_export.csv')
 WS_ID    = 15369712  # Nexus workspace
 
-# ── Status normalization ──────────────────────────────────────────────────────
 # Engagement lifecycle vocabulary ("Active", "On hold") is entirely distinct from
 # deliverable task vocabulary ("In progress", "Done"). Keep the two maps separate
 # so a Smartsheet "Done" on an engagement maps to "Complete", not "Done".
@@ -34,22 +33,21 @@ ENG_STATUS_MAP = {
     'Done':        'Complete',
 }
 DEL_STATUS_MAP = {
-    'To Do':        'To do',
-    'Not Started':  'To do',
-    'In Progress':  'In progress',
-    'Working on it':'In progress',
-    'In Review':    'In review',
-    'Done':         'Done',
+    'To Do':         'To do',
+    'Not Started':   'To do',
+    'In Progress':   'In progress',
+    'Working on it': 'In progress',
+    'In Review':     'In review',
+    'Done':          'Done',
 }
 
-# These indices MUST match the 'labels' dict order passed to create_column via
-# settings_str. monday.com maps index→label at column-creation time, so any
-# mismatch here will silently write the wrong status color to the board.
+# These indices MUST match the 'labels' dict order passed to create_column.
+# monday.com maps index→label at column-creation time, so a mismatch here
+# will silently write the wrong status to the board.
 ENG_STATUS_IDX = {'Active': 0, 'On hold': 1, 'Not started': 2, 'Complete': 3}
 DEL_STATUS_IDX = {'To do': 0, 'In progress': 1, 'In review': 2, 'Done': 3}
 
 
-# ── API helper ────────────────────────────────────────────────────────────────
 def gql(query: str, variables: dict = None) -> dict:
     headers = {
         'Authorization': TOKEN,
@@ -74,11 +72,9 @@ def gql(query: str, variables: dict = None) -> dict:
 
 
 def fmt_date(raw: str) -> str:
-    """MM/DD/YYYY → YYYY-MM-DD"""
     return datetime.strptime(raw.strip(), '%m/%d/%Y').strftime('%Y-%m-%d')
 
 
-# ── CSV parsing ───────────────────────────────────────────────────────────────
 def load_csv() -> tuple:
     engagements: dict = {}
     deliverables: list = []
@@ -100,20 +96,19 @@ def load_csv() -> tuple:
                     'status': ENG_STATUS_MAP[row['engagement_status'].strip()],
                 }
             deliverables.append({
-                'id':         row['deliverable_id'],
-                'name':       row['deliverable_name'],
+                'id':       row['deliverable_id'],
+                'name':     row['deliverable_name'],
                 'engagement': eid,
-                'assignee':   row['assignee'],
-                'due_date':   fmt_date(row['due_date']),
-                'priority':   row['priority'],
-                'status':     DEL_STATUS_MAP[row['deliverable_status'].strip()],
-                'hours':      int(row['hours_estimated']),
+                'assignee': row['assignee'],
+                'due_date': fmt_date(row['due_date']),
+                'priority': row['priority'],
+                'status':   DEL_STATUS_MAP[row['deliverable_status'].strip()],
+                'hours':    int(row['hours_estimated']),
             })
 
     return engagements, deliverables
 
 
-# ── Board setup ───────────────────────────────────────────────────────────────
 def create_board(name: str) -> str:
     data = gql(f'''
         mutation {{
@@ -129,7 +124,6 @@ def create_board(name: str) -> str:
 
 
 def _delete_default_item(board_id: str):
-    """Delete the 'Task 1' placeholder monday.com adds to new boards."""
     # monday.com auto-creates a "Task 1" item on every new board. If left in place
     # it appears in validation as a spurious item, inflating the live count by 1.
     data = gql(f'{{ boards(ids: [{board_id}]) {{ items_page(limit: 10) {{ items {{ id name }} }} }} }}')
@@ -163,13 +157,13 @@ def setup_engagements_board() -> tuple:
     })
 
     cols = {}
-    cols['eng_id']  = add_column(bid, 'Engagement ID',   'text')
-    cols['client']  = add_column(bid, 'Client',           'text')
-    cols['lead']    = add_column(bid, 'Engagement Lead',  'text')
-    cols['start']   = add_column(bid, 'Start Date',       'date')
-    cols['end']     = add_column(bid, 'End Date',         'date')
-    cols['budget']  = add_column(bid, 'Budget ($)',       'numbers')
-    cols['status']  = add_column(bid, 'Status',           'status', eng_status_defaults)
+    cols['eng_id']  = add_column(bid, 'Engagement ID',  'text')
+    cols['client']  = add_column(bid, 'Client',          'text')
+    cols['lead']    = add_column(bid, 'Engagement Lead', 'text')
+    cols['start']   = add_column(bid, 'Start Date',      'date')
+    cols['end']     = add_column(bid, 'End Date',        'date')
+    cols['budget']  = add_column(bid, 'Budget ($)',      'numbers')
+    cols['status']  = add_column(bid, 'Status',          'status', eng_status_defaults)
 
     return bid, cols
 
@@ -188,17 +182,16 @@ def setup_deliverables_board(eng_board_id: str) -> tuple:
     # Post-migration manual step: in the UI, add a Connect Boards column on this board
     # pointing to "Nexus — Engagements" to enable native bidirectional item linking.
     cols['del_id']     = add_column(bid, 'Deliverable ID', 'text')
-    cols['engagement'] = add_column(bid, 'Engagement',    'text')
-    cols['assignee']   = add_column(bid, 'Assignee',      'text')
-    cols['due_date']   = add_column(bid, 'Due Date',      'date')
-    cols['hours']      = add_column(bid, 'Est. Hours',    'numbers')
-    cols['priority']   = add_column(bid, 'Priority',      'text')
-    cols['status']     = add_column(bid, 'Status',        'status', del_status_defaults)
+    cols['engagement'] = add_column(bid, 'Engagement',     'text')
+    cols['assignee']   = add_column(bid, 'Assignee',       'text')
+    cols['due_date']   = add_column(bid, 'Due Date',       'date')
+    cols['hours']      = add_column(bid, 'Est. Hours',     'numbers')
+    cols['priority']   = add_column(bid, 'Priority',       'text')
+    cols['status']     = add_column(bid, 'Status',         'status', del_status_defaults)
 
     return bid, cols
 
 
-# ── Item creation ─────────────────────────────────────────────────────────────
 def create_item(board_id: str, name: str, col_values: dict) -> str:
     data = gql(
         '''
@@ -213,7 +206,6 @@ def create_item(board_id: str, name: str, col_values: dict) -> str:
     return data['create_item']['id']
 
 
-# ── Migration ─────────────────────────────────────────────────────────────────
 def migrate_engagements(board_id: str, cols: dict, engagements: dict) -> dict:
     print('\n[3/4] Migrating engagements…')
     eng_item_map = {}  # engagement_id → monday item_id; persisted in manifest for validate.py
@@ -231,7 +223,7 @@ def migrate_engagements(board_id: str, cols: dict, engagements: dict) -> dict:
         item_id = create_item(board_id, eng['name'], col_values)
         eng_item_map[eng['id']] = item_id
         print(f'  {eng["id"]} → item {item_id}: {eng["name"]} [{eng["status"]}]')
-        time.sleep(0.6)  # respect rate limit
+        time.sleep(0.6)
 
     return eng_item_map
 
@@ -256,7 +248,6 @@ def migrate_deliverables(board_id: str, cols: dict, deliverables: list,
         time.sleep(0.3)
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     print('=' * 60)
     print('Nexus Consulting Group — Smartsheet → monday.com Migration')
@@ -274,12 +265,12 @@ def main():
     # Persist all board/column/item IDs so validate.py can target the exact boards
     # created in this run without re-querying the API to discover them.
     manifest = {
-        'eng_board_id':  eng_board_id,
-        'del_board_id':  del_board_id,
-        'eng_cols':      eng_cols,
-        'del_cols':      del_cols,
-        'eng_item_map':  eng_item_map,
-        'migrated_at':   datetime.now().isoformat(),
+        'eng_board_id': eng_board_id,
+        'del_board_id': del_board_id,
+        'eng_cols':     eng_cols,
+        'del_cols':     del_cols,
+        'eng_item_map': eng_item_map,
+        'migrated_at':  datetime.now().isoformat(),
     }
     manifest_path = os.path.join(os.path.dirname(__file__), 'migration_manifest.json')
     with open(manifest_path, 'w') as f:
