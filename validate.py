@@ -342,7 +342,6 @@ def run_validation(manifest_path=None):
     # ── Render ────────────────────────────────────────────────────────────────
     _print_console(header, checks, rd, summary)
     _write_html(header, checks, rd, summary)
-    _write_markdown(header, checks, rd, summary)
 
     report = {'timestamp': run_ts, 'migrated_at': migrated_at,
               'eng_board_id': eng_board_id, 'del_board_id': del_board_id,
@@ -352,7 +351,6 @@ def run_validation(manifest_path=None):
 
     print('\n  Outputs written:')
     print('    validation_report.html')
-    print('    validation_report.md')
     print('    validation_report.json\n')
     return report
 
@@ -715,121 +713,6 @@ def _write_html(h, checks, rd, s):
     path = os.path.join(os.path.dirname(__file__), 'validation_report.html')
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
-
-
-# ── Markdown renderer ─────────────────────────────────────────────────────────
-def _write_markdown(h, checks, rd, s):
-    hard   = [c for c in checks if not c['advisory']]
-    passed = sum(1 for c in hard if c['pass'])
-    failed = [c for c in hard if not c['pass']]
-
-    def icon(passed, advisory=False):
-        if passed:   return '✅'
-        if advisory: return '⚠️'
-        return '❌'
-
-    lines = []
-    lines += [
-        '# Nexus Consulting Group — Migration Validation Report', '',
-        f'**Report generated:** {h["run_ts"]}  ',
-        f'**Migration run:** {h["migrated_at"]}  ',
-        f'**Engagements board:** `{h["eng_board_id"]}`  ',
-        f'**Deliverables board:** `{h["del_board_id"]}`', '',
-        '## Summary', '',
-        f'| Metric | Value |',
-        f'|--------|-------|',
-        f'| Checks passed | **{s["checks_passed"]}/{s["checks_total"]}** |',
-        f'| Field accuracy | **{s["fields_matched"]}/{s["fields_total"]} ({s["field_pct"]}%)** |',
-        f'| Engagements verified | {h["src_engs"]} |',
-        f'| Deliverables verified | {h["src_dels"]} |',
-        f'| Total budget verified | ${h["total_budget"]:,} |',
-        f'| Total hours verified | {h["total_hours"]} h |',
-        '',
-    ]
-
-    if failed:
-        lines += ['> ❌ **Issues found:**']
-        for c in failed:
-            lines += [f'> - {c["label"]}']
-        lines += ['']
-    else:
-        lines += ['> ✅ **No issues found. Migration data integrity confirmed.**', '']
-
-    TITLES = {1:'Structural Integrity', 2:'Status Validation',
-               3:'Field-Level Cross-Reference', 4:'Engagement Drill-Down',
-               5:'Data Quality Flags', 6:'People Provisioning'}
-
-    section_checks = defaultdict(list)
-    for c in checks:
-        section_checks[c['section']].append(c)
-
-    for sec_num, title in TITLES.items():
-        lines += [f'## {sec_num}. {title}', '']
-        for c in section_checks[sec_num]:
-            ic = icon(c['pass'], c['advisory'])
-            lines += [f'- {ic} {c["label"]}']
-            for d in c['detail']:
-                lines += [f'  - {d}']
-        lines += ['']
-
-        if sec_num == 2:
-            lines += ['### Status Distribution', '',
-                      '**Engagements**', '',
-                      '| Status | CSV | Live | Match |',
-                      '|--------|-----|------|-------|']
-            for st, (a, b) in rd['eng_dist'].items():
-                lines += [f'| {st} | {a} | {b} | {"✅" if a==b else "❌"} |']
-            lines += ['', '**Deliverables**', '',
-                      '| Status | CSV | Live | Match |',
-                      '|--------|-----|------|-------|']
-            for st, (a, b) in rd['del_dist'].items():
-                lines += [f'| {st} | {a} | {b} | {"✅" if a==b else "❌"} |']
-            lines += ['']
-
-        if sec_num == 3:
-            lines += [f'> **Field accuracy: {s["fields_matched"]}/{s["fields_total"]} data points ({s["field_pct"]}%)**', '']
-
-        if sec_num == 4:
-            for eng in rd['drilldown']:
-                sk = '✅' if eng['status_ok'] else '❌'
-                lines += [
-                    f'### {eng["id"]} — {eng["name"]}', '',
-                    f'| | |',
-                    f'|---|---|',
-                    f'| Client | {eng["client"]} |',
-                    f'| Lead | {eng["lead"]} |',
-                    f'| Status | {sk} {eng["status"]} |',
-                    f'| Budget | ${int(eng["budget"]):,} |',
-                    f'| Period | {eng["start"]} → {eng["end"]} |',
-                    f'| Deliverables | {eng["total"]} total · {eng["done"]} done · {eng["hours"]} h |',
-                    '',
-                    '| ✓ | Deliverable | Priority | Status | Due Date | Assignee | Hours |',
-                    '|---|-------------|----------|--------|----------|----------|-------|',
-                ]
-                for d in eng['deliverables']:
-                    ov = ' ⚠️' if d['overdue'] else ''
-                    ok = '✅' if d['status_ok'] else '❌'
-                    lines += [f'| {ok} | {d["name"]} | {d["priority"]} | {d["live_status"]} '
-                               f'| {d["due_date"]}{ov} | {d["assignee"]} | {d["hours"]} h |']
-                lines += ['']
-
-        if sec_num == 5:
-            lines += ['### Budget Reconciliation', '',
-                      '| Status | Budget |',
-                      '|--------|--------|']
-            for st, amt in rd['budget_by_status'].items():
-                lines += [f'| {st} | ${amt:,} |']
-            lines += [f'| **TOTAL** | **${rd["total_budget"]:,}** |', '',
-                      '### Hours by Assignee', '',
-                      '| Consultant | Hours |',
-                      '|------------|-------|']
-            for p, hrs in rd['hours_by_person'].items():
-                lines += [f'| {p} | {hrs} h |']
-            lines += [f'| **TOTAL** | **{rd["total_hours"]} h** |', '']
-
-    path = os.path.join(os.path.dirname(__file__), 'validation_report.md')
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(lines))
 
 
 if __name__ == '__main__':
