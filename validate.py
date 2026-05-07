@@ -370,6 +370,34 @@ def run_validation(manifest_path=None):
     chk(5, 'Complete engagements have all deliverables marked Done',
         not complete_with_open, complete_with_open, advisory=bool(complete_with_open))
 
+    # Check live monday.com boards for any blank column values across all mapped columns.
+    # Catches fields that were cleared manually post-migration or failed to write during import.
+    eng_blank_cols = {
+        'Engagement ID': ec['eng_id'], 'Client': ec['client'], 'Lead': ec['lead'],
+        'Start Date': ec['start'], 'End Date': ec['end'],
+        'Budget ($)': ec['budget'], 'Status': ec['status'],
+    }
+    del_blank_cols = {
+        'Deliverable ID': dc['del_id'], 'Engagement': dc['engagement'],
+        'Assignee': dc['assignee'], 'Due Date': dc['due_date'],
+        'Est. Hours': dc['hours'], 'Priority': dc['priority'], 'Status': dc['status'],
+    }
+    eng_blanks = [
+        f'{i["name"]} — {label}'
+        for i in eng_items
+        for label, col_id in eng_blank_cols.items()
+        if not col_text(i, col_id)
+    ]
+    chk(5, 'No blank fields on live Engagements board', not eng_blanks, eng_blanks)
+
+    del_blanks = [
+        f'{i["name"]} — {label}'
+        for i in del_items
+        for label, col_id in del_blank_cols.items()
+        if not col_text(i, col_id)
+    ]
+    chk(5, 'No blank fields on live Deliverables board', not del_blanks, del_blanks)
+
     # A not-started engagement with active or completed deliverables suggests work began
     # in the source system before the engagement record was formally opened.
     not_started_with_work = []
