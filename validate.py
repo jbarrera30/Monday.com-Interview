@@ -29,6 +29,10 @@ DEL_STATUS_MAP = {
     'In Progress': 'In Progress', 'Working on it': 'In Progress',
     'In Review': 'In Review', 'Done': 'Done',
 }
+# These reflect the actual label order on the live boards — queried from column settings_str.
+# monday.com does not always preserve the label order passed to create_column.
+ENG_STATUS_IDX = {'Active': 0, 'Complete': 1, 'Not Started': 2, 'On Hold': 3}
+DEL_STATUS_IDX = {'In Progress': 0, 'Done': 1, 'To Do': 2, 'In Review': 3}
 VALID_ENG_STATUSES = set(ENG_STATUS_MAP.values())
 VALID_DEL_STATUSES = set(DEL_STATUS_MAP.values())
 DONE_STATUSES      = {'Done', 'Complete'}

@@ -20,11 +20,11 @@
     .section-wrap { background: white; border-radius: 8px; padding: 24px 28px;
                      margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
     .sec-header { cursor: pointer; user-select: none; display: flex; align-items: center;
-                  justify-content: space-between; padding-bottom: 6px;
-                  border-bottom: 2px solid #00a650; margin-bottom: 12px; }
+                   justify-content: space-between; padding-bottom: 6px;
+                   border-bottom: 2px solid #00a650; margin-bottom: 12px; }
     .sec-header:hover h2 { color: #00a650; }
     .sec-header .chevron { font-size: 11px; color: #999; transition: transform 0.2s;
-                           flex-shrink: 0; margin-left: 8px; }
+                            flex-shrink: 0; margin-left: 8px; }
     .sec-header.collapsed .chevron { transform: rotate(-90deg); }
   </style>
 </head>
@@ -33,7 +33,7 @@
   <div class="header">
     <h1>Nexus Consulting Group — Migration Validation Report</h1>
     <div class="sub">
-      Report generated: 2026-05-07 01:03:00 &nbsp;·&nbsp;
+      Report generated: 2026-05-07 08:44:32 &nbsp;·&nbsp;
       Migration run: 2026-05-07T00:46:49 &nbsp;·&nbsp;
       Engagements board: 18412101102 &nbsp;·&nbsp;
       Deliverables board: 18412101119
@@ -69,14 +69,15 @@
     
         <div style="margin-bottom:32px">
           <div class="sec-header" onclick="toggleSection(this)">
-            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;transition:color 0.15s">
+            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;
+                       transition:color 0.15s">
               1. Structural Integrity
             </h2>
             <span class="chevron">&#9660;</span>
           </div>
           <div class="sec-body">
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tbody>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:4px">
+              <tbody>
             <tr style="">
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
@@ -149,19 +150,21 @@
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 No duplicate deliverable IDs in source CSV</td>
             </tr></tbody>
-          </table>
+            </table>
+            
           </div>
         </div>
         <div style="margin-bottom:32px">
           <div class="sec-header" onclick="toggleSection(this)">
-            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;transition:color 0.15s">
+            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;
+                       transition:color 0.15s">
               2. Status Validation
             </h2>
             <span class="chevron">&#9660;</span>
           </div>
           <div class="sec-body">
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tbody>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:4px">
+              <tbody>
             <tr style="">
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
@@ -186,8 +189,8 @@
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 Deliverable statuses match CSV (27/27 correct)</td>
             </tr></tbody>
-          </table>
-          
+            </table>
+            
                 <div style="margin-top:16px">
                   <p style="font-weight:600;margin-bottom:6px">Engagements</p>
                   <table style="border-collapse:collapse;font-size:13px;width:auto">
@@ -214,14 +217,15 @@
         </div>
         <div style="margin-bottom:32px">
           <div class="sec-header" onclick="toggleSection(this)">
-            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;transition:color 0.15s">
+            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;
+                       transition:color 0.15s">
               3. Field-Level Cross-Reference
             </h2>
             <span class="chevron">&#9660;</span>
           </div>
           <div class="sec-body">
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tbody>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:4px">
+              <tbody>
             <tr style="">
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
@@ -294,22 +298,23 @@
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 Deliverable Engagement: 27/27 match</td>
             </tr></tbody>
-          </table>
-          <p style="margin-top:12px;font-weight:600;color:#00a650">Field accuracy: 198/198 data points (100%)</p>
+            </table>
+            <p style="margin-top:12px;font-weight:600;color:#00a650">Field accuracy: 198/198 data points (100%)</p>
           </div>
         </div>
         <div style="margin-bottom:32px">
           <div class="sec-header" onclick="toggleSection(this)">
-            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;transition:color 0.15s">
+            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;
+                       transition:color 0.15s">
               4. Engagement Drill-Down
             </h2>
             <span class="chevron">&#9660;</span>
           </div>
           <div class="sec-body">
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tbody></tbody>
-          </table>
-          
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:4px">
+              <tbody></tbody>
+            </table>
+            
                 <div style="margin-bottom:20px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden">
                   <div style="background:#f5f6f8;padding:10px 14px;font-weight:600">
                     ENG-001 — Digital Transformation Strategy
@@ -728,14 +733,15 @@
         </div>
         <div style="margin-bottom:32px">
           <div class="sec-header" onclick="toggleSection(this)">
-            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;transition:color 0.15s">
+            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;
+                       transition:color 0.15s">
               5. Data Quality Flags
             </h2>
             <span class="chevron">&#9660;</span>
           </div>
           <div class="sec-body">
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tbody>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:4px">
+              <tbody>
             <tr style="">
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
@@ -796,8 +802,8 @@
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 Not started engagements have no active or completed deliverables</td>
             </tr></tbody>
-          </table>
-          
+            </table>
+            
             <div style="display:flex;gap:32px;margin-top:16px;flex-wrap:wrap">
               <div>
                 <p style="font-weight:600;margin-bottom:6px">Budget by Engagement Status</p>
@@ -822,27 +828,29 @@
         </div>
         <div style="margin-bottom:32px">
           <div class="sec-header" onclick="toggleSection(this)">
-            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;transition:color 0.15s">
+            <h2 style="font-size:15px;font-weight:700;color:#323338;margin:0;
+                       transition:color 0.15s">
               6. People Provisioning
             </h2>
             <span class="chevron">&#9660;</span>
           </div>
           <div class="sec-body">
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tbody>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:4px">
+              <tbody>
             <tr style="">
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
               <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
                 13 consultants require monday.com user provisioning<ul style="margin:4px 0 0 16px;font-size:13px;color:#555"><li>Alex Kim</li><li>Amanda Foster</li><li>Chris Anderson</li><li>David Park</li><li>Emily Rodriguez</li><li>James Wilson</li><li>Jennifer Lee</li><li>Kevin Brown</li><li>Lisa Wang</li><li>Michael Torres</li><li>Rachel Martinez</li><li>Robert Chen</li><li>Sarah Chen</li></ul></td>
             </tr></tbody>
-          </table>
+            </table>
+            
           </div>
         </div>
   </div>
 
   <p style="text-align:center;font-size:12px;color:#aaa;margin-top:24px">
-    Nexus Consulting Group · Smartsheet → monday.com Migration · 2026-05-07 01:03:00
+    Nexus Consulting Group · Smartsheet → monday.com Migration · 2026-05-07 08:44:32
   </p>
 </div>
 <script>

@@ -44,8 +44,8 @@ DEL_STATUS_MAP = {
 # These indices MUST match the 'labels' dict order passed to create_column.
 # monday.com maps index→label at column-creation time, so a mismatch here
 # will silently write the wrong status to the board.
-ENG_STATUS_IDX = {'Active': 0, 'On Hold': 1, 'Not Started': 2, 'Complete': 3}
-DEL_STATUS_IDX = {'To Do': 0, 'In Progress': 1, 'In Review': 2, 'Done': 3}
+ENG_STATUS_IDX = {'Active': 0, 'Complete': 1, 'Not Started': 2, 'On Hold': 3}
+DEL_STATUS_IDX = {'In Progress': 0, 'Done': 1, 'To Do': 2, 'In Review': 3}
 
 
 def gql(query: str, variables: dict = None) -> dict:
@@ -154,7 +154,7 @@ def setup_engagements_board() -> tuple:
     bid = create_board('Nexus — Engagements')
 
     eng_status_defaults = json.dumps({
-        'labels': {'0': 'Active', '1': 'On Hold', '2': 'Not Started', '3': 'Complete'}
+        'labels': {'0': 'Active', '1': 'Complete', '2': 'Not Started', '3': 'On Hold'}
     })
 
     cols = {}
@@ -174,7 +174,7 @@ def setup_deliverables_board() -> tuple:
     bid = create_board('Nexus — Deliverables')
 
     del_status_defaults = json.dumps({
-        'labels': {'0': 'To Do', '1': 'In Progress', '2': 'In Review', '3': 'Done'}
+        'labels': {'0': 'In Progress', '1': 'Done', '2': 'To Do', '3': 'In Review'}
     })
 
     cols = {}
