@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Migration Validation Report</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+           color: #323338; margin: 0; padding: 0; background: #f5f6f8; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+    .header { background: #323338; color: white; padding: 28px 32px;
+               border-radius: 8px; margin-bottom: 28px; }
+    .header h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
+    .header .sub { font-size: 13px; color: #c3c6d4; margin-top: 6px; }
+    .cards { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+    .card { background: white; border-radius: 8px; padding: 18px 22px;
+             flex: 1; min-width: 160px; border-top: 3px solid #00a650; }
+    .card .val { font-size: 26px; font-weight: 700; color: #323338; }
+    .card .lbl { font-size: 12px; color: #777; margin-top: 2px; }
+    .section-wrap { background: white; border-radius: 8px; padding: 24px 28px;
+                     margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .fail-summary { background: #fff0f2; border-left: 4px solid #e2445c;
+                     padding: 14px 18px; border-radius: 4px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Nexus Consulting Group — Migration Validation Report</h1>
+    <div class="sub">
+      Report generated: 2026-05-06 22:04:46 &nbsp;·&nbsp;
+      Migration run: 2026-05-06T21:12:56 &nbsp;·&nbsp;
+      Engagements board: 18412088291 &nbsp;·&nbsp;
+      Deliverables board: 18412088321
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card" style="border-color:#00a650">
+      <div class="val">25/25</div>
+      <div class="lbl">Checks Passed</div>
+    </div>
+    <div class="card">
+      <div class="val">165/165</div>
+      <div class="lbl">Fields Verified (100%)</div>
+    </div>
+    <div class="card">
+      <div class="val">6 / 27</div>
+      <div class="lbl">Engagements / Deliverables</div>
+    </div>
+    <div class="card">
+      <div class="val">$820,000</div>
+      <div class="lbl">Total Budget Verified</div>
+    </div>
+    <div class="card">
+      <div class="val">864 h</div>
+      <div class="lbl">Total Hours Verified</div>
+    </div>
+  </div>
+
+  
+
+  <div class="section-wrap">
+    
+        <div style="margin-bottom:32px">
+          <h2 style="font-size:15px;font-weight:700;color:#323338;margin-bottom:12px;
+                     padding-bottom:6px;border-bottom:2px solid #00a650">
+            1. Structural Integrity
+          </h2>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tbody>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement count matches (expected 6, live 6)</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Deliverable count matches (expected 27, live 27)</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                All 6 CSV engagements present in monday.com</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                All 27 CSV deliverables present in monday.com</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                No extra deliverables in monday.com (not in CSV)</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                No duplicate engagement names</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                No duplicate deliverable names</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                No orphan deliverables (all have engagement reference)</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement fields consistent across all CSV rows</td>
+            </tr></tbody>
+          </table>
+          
+        </div>
+        <div style="margin-bottom:32px">
+          <h2 style="font-size:15px;font-weight:700;color:#323338;margin-bottom:12px;
+                     padding-bottom:6px;border-bottom:2px solid #00a650">
+            2. Status Validation
+          </h2>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tbody>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                All 6 engagement statuses are canonical</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                All 27 deliverable statuses are canonical</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement statuses match CSV (6/6 correct)</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Deliverable statuses match CSV (27/27 correct)</td>
+            </tr></tbody>
+          </table>
+          
+                <div style="margin-top:16px">
+                  <p style="font-weight:600;margin-bottom:6px">Engagements</p>
+                  <table style="border-collapse:collapse;font-size:13px;width:auto">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:5px 10px;text-align:left">Status</th>
+                      <th style="padding:5px 10px">CSV</th>
+                      <th style="padding:5px 10px">Live</th>
+                    </tr></thead>
+                    <tbody><tr><td style="padding:5px 10px">✓ Active</td><td style="padding:5px 10px;text-align:center">3</td><td style="padding:5px 10px;text-align:center">3</td></tr><tr><td style="padding:5px 10px">✓ Complete</td><td style="padding:5px 10px;text-align:center">1</td><td style="padding:5px 10px;text-align:center">1</td></tr><tr><td style="padding:5px 10px">✓ Not started</td><td style="padding:5px 10px;text-align:center">1</td><td style="padding:5px 10px;text-align:center">1</td></tr><tr><td style="padding:5px 10px">✓ On hold</td><td style="padding:5px 10px;text-align:center">1</td><td style="padding:5px 10px;text-align:center">1</td></tr></tbody>
+                  </table>
+                </div>
+                <div style="margin-top:16px">
+                  <p style="font-weight:600;margin-bottom:6px">Deliverables</p>
+                  <table style="border-collapse:collapse;font-size:13px;width:auto">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:5px 10px;text-align:left">Status</th>
+                      <th style="padding:5px 10px">CSV</th>
+                      <th style="padding:5px 10px">Live</th>
+                    </tr></thead>
+                    <tbody><tr><td style="padding:5px 10px">✓ Done</td><td style="padding:5px 10px;text-align:center">11</td><td style="padding:5px 10px;text-align:center">11</td></tr><tr><td style="padding:5px 10px">✓ In progress</td><td style="padding:5px 10px;text-align:center">4</td><td style="padding:5px 10px;text-align:center">4</td></tr><tr><td style="padding:5px 10px">✓ In review</td><td style="padding:5px 10px;text-align:center">1</td><td style="padding:5px 10px;text-align:center">1</td></tr><tr><td style="padding:5px 10px">✓ To do</td><td style="padding:5px 10px;text-align:center">11</td><td style="padding:5px 10px;text-align:center">11</td></tr></tbody>
+                  </table>
+                </div>
+        </div>
+        <div style="margin-bottom:32px">
+          <h2 style="font-size:15px;font-weight:700;color:#323338;margin-bottom:12px;
+                     padding-bottom:6px;border-bottom:2px solid #00a650">
+            3. Field-Level Cross-Reference
+          </h2>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tbody>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement Client: 6/6 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement Engagement Lead: 6/6 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement Start Date: 6/6 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement End Date: 6/6 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Engagement Budget ($): 6/6 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Deliverable Assignee: 27/27 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Deliverable Due Date: 27/27 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Deliverable Priority: 27/27 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Deliverable Est. Hours: 27/27 match</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Deliverable Engagement: 27/27 match</td>
+            </tr></tbody>
+          </table>
+          <p style="margin-top:12px;font-weight:600;color:#00a650">Field accuracy: 165/165 data points (100%)</p>
+        </div>
+        <div style="margin-bottom:32px">
+          <h2 style="font-size:15px;font-weight:700;color:#323338;margin-bottom:12px;
+                     padding-bottom:6px;border-bottom:2px solid #00a650">
+            4. Engagement Drill-Down
+          </h2>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tbody></tbody>
+          </table>
+          
+                <div style="margin-bottom:20px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden">
+                  <div style="background:#f5f6f8;padding:10px 14px;font-weight:600">
+                    ENG-001 — Digital Transformation Strategy
+                    <span style="font-weight:400;font-size:13px;margin-left:12px;color:#555">
+                      Acme Corporation  ·  Lead: Sarah Chen  ·  $150,000  ·
+                      <span style="color:#00a650">✓</span> Active  ·  2025-01-15 → 2025-04-30
+                    </span>
+                  </div>
+                  <div style="padding:8px 14px;font-size:13px;color:#555">
+                    5 deliverables  ·  2 done  ·  172 h estimated
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;font-size:12px">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:4px 8px;text-align:left">✓</th>
+                      <th style="padding:4px 8px;text-align:left">Deliverable</th>
+                      <th style="padding:4px 8px;text-align:left">Priority</th>
+                      <th style="padding:4px 8px;text-align:left">Status</th>
+                      <th style="padding:4px 8px;text-align:left">Due Date</th>
+                      <th style="padding:4px 8px;text-align:left">Assignee</th>
+                      <th style="padding:4px 8px;text-align:right">Hours</th>
+                    </tr></thead>
+                    <tbody>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Current State Assessment</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-02-01</td>
+                      <td style="padding:4px 8px;font-size:12px">Michael Torres</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">40 h</td>
+                    </tr>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Stakeholder Interviews</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-02-15</td>
+                      <td style="padding:4px 8px;font-size:12px">Sarah Chen</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">24 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Technology Roadmap</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">In progress</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-03-15 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Michael Torres</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">60 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Implementation Plan</td>
+                      <td style="padding:4px 8px;font-size:12px">Medium</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-04-15 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Sarah Chen</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">32 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Executive Presentation</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-04-30 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Sarah Chen</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">16 h</td>
+                    </tr></tbody>
+                  </table>
+                </div>
+                <div style="margin-bottom:20px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden">
+                  <div style="background:#f5f6f8;padding:10px 14px;font-weight:600">
+                    ENG-002 — Operational Excellence Program
+                    <span style="font-weight:400;font-size:13px;margin-left:12px;color:#555">
+                      Global Industries  ·  Lead: James Wilson  ·  $200,000  ·
+                      <span style="color:#00a650">✓</span> Active  ·  2025-02-01 → 2025-06-30
+                    </span>
+                  </div>
+                  <div style="padding:8px 14px;font-size:13px;color:#555">
+                    5 deliverables  ·  1 done  ·  160 h estimated
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;font-size:12px">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:4px 8px;text-align:left">✓</th>
+                      <th style="padding:4px 8px;text-align:left">Deliverable</th>
+                      <th style="padding:4px 8px;text-align:left">Priority</th>
+                      <th style="padding:4px 8px;text-align:left">Status</th>
+                      <th style="padding:4px 8px;text-align:left">Due Date</th>
+                      <th style="padding:4px 8px;text-align:left">Assignee</th>
+                      <th style="padding:4px 8px;text-align:right">Hours</th>
+                    </tr></thead>
+                    <tbody>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Process Mapping Workshop</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-02-20</td>
+                      <td style="padding:4px 8px;font-size:12px">Emily Rodriguez</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">16 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Efficiency Analysis Report</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">In review</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-03-15 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">James Wilson</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">48 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">KPI Dashboard Design</td>
+                      <td style="padding:4px 8px;font-size:12px">Medium</td>
+                      <td style="padding:4px 8px;font-size:12px">In progress</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-04-01 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Emily Rodriguez</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">24 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Training Materials</td>
+                      <td style="padding:4px 8px;font-size:12px">Low</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-05-15 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Alex Kim</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">32 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Change Management Plan</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-06-01 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">James Wilson</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">40 h</td>
+                    </tr></tbody>
+                  </table>
+                </div>
+                <div style="margin-bottom:20px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden">
+                  <div style="background:#f5f6f8;padding:10px 14px;font-weight:600">
+                    ENG-003 — Market Entry Analysis
+                    <span style="font-weight:400;font-size:13px;margin-left:12px;color:#555">
+                      TechStart Inc  ·  Lead: Rachel Martinez  ·  $75,000  ·
+                      <span style="color:#00a650">✓</span> Active  ·  2025-03-01 → 2025-05-15
+                    </span>
+                  </div>
+                  <div style="padding:8px 14px;font-size:13px;color:#555">
+                    4 deliverables  ·  1 done  ·  116 h estimated
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;font-size:12px">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:4px 8px;text-align:left">✓</th>
+                      <th style="padding:4px 8px;text-align:left">Deliverable</th>
+                      <th style="padding:4px 8px;text-align:left">Priority</th>
+                      <th style="padding:4px 8px;text-align:left">Status</th>
+                      <th style="padding:4px 8px;text-align:left">Due Date</th>
+                      <th style="padding:4px 8px;text-align:left">Assignee</th>
+                      <th style="padding:4px 8px;text-align:right">Hours</th>
+                    </tr></thead>
+                    <tbody>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Competitive Landscape Review</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-03-20</td>
+                      <td style="padding:4px 8px;font-size:12px">Rachel Martinez</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">32 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Customer Segmentation Study</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">In progress</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-04-05 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">David Park</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">28 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Go-to-Market Strategy</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-05-01 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Rachel Martinez</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">36 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Financial Projections</td>
+                      <td style="padding:4px 8px;font-size:12px">Medium</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-05-10 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">David Park</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">20 h</td>
+                    </tr></tbody>
+                  </table>
+                </div>
+                <div style="margin-bottom:20px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden">
+                  <div style="background:#f5f6f8;padding:10px 14px;font-weight:600">
+                    ENG-004 — Supply Chain Optimization
+                    <span style="font-weight:400;font-size:13px;margin-left:12px;color:#555">
+                      Metro Manufacturing  ·  Lead: Chris Anderson  ·  $180,000  ·
+                      <span style="color:#00a650">✓</span> Complete  ·  2024-11-01 → 2025-02-28
+                    </span>
+                  </div>
+                  <div style="padding:8px 14px;font-size:13px;color:#555">
+                    5 deliverables  ·  5 done  ·  156 h estimated
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;font-size:12px">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:4px 8px;text-align:left">✓</th>
+                      <th style="padding:4px 8px;text-align:left">Deliverable</th>
+                      <th style="padding:4px 8px;text-align:left">Priority</th>
+                      <th style="padding:4px 8px;text-align:left">Status</th>
+                      <th style="padding:4px 8px;text-align:left">Due Date</th>
+                      <th style="padding:4px 8px;text-align:left">Assignee</th>
+                      <th style="padding:4px 8px;text-align:right">Hours</th>
+                    </tr></thead>
+                    <tbody>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Inventory Analysis</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2024-11-20</td>
+                      <td style="padding:4px 8px;font-size:12px">Chris Anderson</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">36 h</td>
+                    </tr>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Vendor Assessment</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2024-12-15</td>
+                      <td style="padding:4px 8px;font-size:12px">Lisa Wang</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">28 h</td>
+                    </tr>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Logistics Redesign</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-01-30</td>
+                      <td style="padding:4px 8px;font-size:12px">Chris Anderson</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">52 h</td>
+                    </tr>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Implementation Roadmap</td>
+                      <td style="padding:4px 8px;font-size:12px">Medium</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-02-15</td>
+                      <td style="padding:4px 8px;font-size:12px">Lisa Wang</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">24 h</td>
+                    </tr>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Final Report & Handoff</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-02-28</td>
+                      <td style="padding:4px 8px;font-size:12px">Chris Anderson</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">16 h</td>
+                    </tr></tbody>
+                  </table>
+                </div>
+                <div style="margin-bottom:20px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden">
+                  <div style="background:#f5f6f8;padding:10px 14px;font-weight:600">
+                    ENG-005 — Customer Experience Redesign
+                    <span style="font-weight:400;font-size:13px;margin-left:12px;color:#555">
+                      Retail Plus  ·  Lead: Jennifer Lee  ·  $120,000  ·
+                      <span style="color:#00a650">✓</span> On hold  ·  2024-12-01 → 2025-03-31
+                    </span>
+                  </div>
+                  <div style="padding:8px 14px;font-size:13px;color:#555">
+                    4 deliverables  ·  2 done  ·  140 h estimated
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;font-size:12px">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:4px 8px;text-align:left">✓</th>
+                      <th style="padding:4px 8px;text-align:left">Deliverable</th>
+                      <th style="padding:4px 8px;text-align:left">Priority</th>
+                      <th style="padding:4px 8px;text-align:left">Status</th>
+                      <th style="padding:4px 8px;text-align:left">Due Date</th>
+                      <th style="padding:4px 8px;text-align:left">Assignee</th>
+                      <th style="padding:4px 8px;text-align:right">Hours</th>
+                    </tr></thead>
+                    <tbody>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Journey Mapping Sessions</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2024-12-20</td>
+                      <td style="padding:4px 8px;font-size:12px">Jennifer Lee</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">20 h</td>
+                    </tr>
+                    <tr style="">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Pain Point Analysis</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">Done</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-01-15</td>
+                      <td style="padding:4px 8px;font-size:12px">Kevin Brown</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">32 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Service Blueprint</td>
+                      <td style="padding:4px 8px;font-size:12px">Medium</td>
+                      <td style="padding:4px 8px;font-size:12px">In progress</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-02-28 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Jennifer Lee</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">40 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Prototype Development</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-03-15 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Kevin Brown</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">48 h</td>
+                    </tr></tbody>
+                  </table>
+                </div>
+                <div style="margin-bottom:20px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden">
+                  <div style="background:#f5f6f8;padding:10px 14px;font-weight:600">
+                    ENG-006 — Workforce Planning Initiative
+                    <span style="font-weight:400;font-size:13px;margin-left:12px;color:#555">
+                      HealthFirst Medical  ·  Lead: Amanda Foster  ·  $95,000  ·
+                      <span style="color:#00a650">✓</span> Not started  ·  2025-04-01 → 2025-07-31
+                    </span>
+                  </div>
+                  <div style="padding:8px 14px;font-size:13px;color:#555">
+                    4 deliverables  ·  0 done  ·  120 h estimated
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;font-size:12px">
+                    <thead><tr style="background:#f5f6f8">
+                      <th style="padding:4px 8px;text-align:left">✓</th>
+                      <th style="padding:4px 8px;text-align:left">Deliverable</th>
+                      <th style="padding:4px 8px;text-align:left">Priority</th>
+                      <th style="padding:4px 8px;text-align:left">Status</th>
+                      <th style="padding:4px 8px;text-align:left">Due Date</th>
+                      <th style="padding:4px 8px;text-align:left">Assignee</th>
+                      <th style="padding:4px 8px;text-align:right">Hours</th>
+                    </tr></thead>
+                    <tbody>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Skills Gap Assessment</td>
+                      <td style="padding:4px 8px;font-size:12px">High</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-04-30 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Amanda Foster</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">28 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Hiring Strategy Document</td>
+                      <td style="padding:4px 8px;font-size:12px">Medium</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-05-31 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Robert Chen</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">24 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Training Program Design</td>
+                      <td style="padding:4px 8px;font-size:12px">Medium</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-06-30 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Amanda Foster</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">36 h</td>
+                    </tr>
+                    <tr style="background:#fff8f0">
+                      <td style="padding:4px 8px;font-size:12px;color:#00a650">
+                        ✓</td>
+                      <td style="padding:4px 8px;font-size:12px">Succession Planning Framework</td>
+                      <td style="padding:4px 8px;font-size:12px">Low</td>
+                      <td style="padding:4px 8px;font-size:12px">To do</td>
+                      <td style="padding:4px 8px;font-size:12px">2025-07-31 <span style="color:#fdab3d;font-size:11px">⚠ OVERDUE</span></td>
+                      <td style="padding:4px 8px;font-size:12px">Robert Chen</td>
+                      <td style="padding:4px 8px;font-size:12px;text-align:right">32 h</td>
+                    </tr></tbody>
+                  </table>
+                </div>
+        </div>
+        <div style="margin-bottom:32px">
+          <h2 style="font-size:15px;font-weight:700;color:#323338;margin-bottom:12px;
+                     padding-bottom:6px;border-bottom:2px solid #00a650">
+            5. Data Quality Flags
+          </h2>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tbody>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                No deliverables missing assignee</td>
+            </tr>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                No deliverables missing due date</td>
+            </tr>
+            <tr style="background:#fff8f0">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#fdab3d;font-weight:600">⚠ Advisory</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                Overdue open deliverables: 16 flagged (historical data)<ul style="margin:4px 0 0 16px;font-size:13px;color:#555"><li>Technology Roadmap (due 2025-03-15, Michael Torres, In progress)</li><li>Implementation Plan (due 2025-04-15, Sarah Chen, To do)</li><li>Executive Presentation (due 2025-04-30, Sarah Chen, To do)</li><li>Efficiency Analysis Report (due 2025-03-15, James Wilson, In review)</li><li>KPI Dashboard Design (due 2025-04-01, Emily Rodriguez, In progress)</li><li>Training Materials (due 2025-05-15, Alex Kim, To do)</li><li>Change Management Plan (due 2025-06-01, James Wilson, To do)</li><li>Customer Segmentation Study (due 2025-04-05, David Park, In progress)</li><li>Go-to-Market Strategy (due 2025-05-01, Rachel Martinez, To do)</li><li>Financial Projections (due 2025-05-10, David Park, To do)</li><li>Service Blueprint (due 2025-02-28, Jennifer Lee, In progress)</li><li>Prototype Development (due 2025-03-15, Kevin Brown, To do)</li><li>Skills Gap Assessment (due 2025-04-30, Amanda Foster, To do)</li><li>Hiring Strategy Document (due 2025-05-31, Robert Chen, To do)</li><li>Training Program Design (due 2025-06-30, Amanda Foster, To do)</li><li>Succession Planning Framework (due 2025-07-31, Robert Chen, To do)</li></ul></td>
+            </tr></tbody>
+          </table>
+          
+            <div style="display:flex;gap:32px;margin-top:16px;flex-wrap:wrap">
+              <div>
+                <p style="font-weight:600;margin-bottom:6px">Budget by Engagement Status</p>
+                <table style="border-collapse:collapse;font-size:13px">
+                  <thead><tr style="background:#f5f6f8">
+                    <th style="padding:5px 10px;text-align:left">Status</th>
+                    <th style="padding:5px 10px;text-align:right">Budget</th>
+                  </tr></thead><tbody><tr><td style="padding:5px 10px">Active</td><td style="padding:5px 10px;text-align:right">$425,000</td></tr><tr><td style="padding:5px 10px">Complete</td><td style="padding:5px 10px;text-align:right">$180,000</td></tr><tr><td style="padding:5px 10px">Not started</td><td style="padding:5px 10px;text-align:right">$95,000</td></tr><tr><td style="padding:5px 10px">On hold</td><td style="padding:5px 10px;text-align:right">$120,000</td></tr><tr style="font-weight:600;background:#f5f6f8"><td style="padding:5px 10px">TOTAL</td><td style="padding:5px 10px;text-align:right">$820,000</td></tr></tbody>
+                </table>
+              </div>
+              <div>
+                <p style="font-weight:600;margin-bottom:6px">Estimated Hours by Assignee</p>
+                <table style="border-collapse:collapse;font-size:13px">
+                  <thead><tr style="background:#f5f6f8">
+                    <th style="padding:5px 10px;text-align:left">Consultant</th>
+                    <th style="padding:5px 10px;text-align:right">Hours</th>
+                  </tr></thead><tbody><tr><td style="padding:5px 10px">Chris Anderson</td><td style="padding:5px 10px;text-align:right">104 h</td></tr><tr><td style="padding:5px 10px">Michael Torres</td><td style="padding:5px 10px;text-align:right">100 h</td></tr><tr><td style="padding:5px 10px">James Wilson</td><td style="padding:5px 10px;text-align:right">88 h</td></tr><tr><td style="padding:5px 10px">Kevin Brown</td><td style="padding:5px 10px;text-align:right">80 h</td></tr><tr><td style="padding:5px 10px">Sarah Chen</td><td style="padding:5px 10px;text-align:right">72 h</td></tr><tr><td style="padding:5px 10px">Rachel Martinez</td><td style="padding:5px 10px;text-align:right">68 h</td></tr><tr><td style="padding:5px 10px">Amanda Foster</td><td style="padding:5px 10px;text-align:right">64 h</td></tr><tr><td style="padding:5px 10px">Jennifer Lee</td><td style="padding:5px 10px;text-align:right">60 h</td></tr><tr><td style="padding:5px 10px">Robert Chen</td><td style="padding:5px 10px;text-align:right">56 h</td></tr><tr><td style="padding:5px 10px">Lisa Wang</td><td style="padding:5px 10px;text-align:right">52 h</td></tr><tr><td style="padding:5px 10px">David Park</td><td style="padding:5px 10px;text-align:right">48 h</td></tr><tr><td style="padding:5px 10px">Emily Rodriguez</td><td style="padding:5px 10px;text-align:right">40 h</td></tr><tr><td style="padding:5px 10px">Alex Kim</td><td style="padding:5px 10px;text-align:right">32 h</td></tr><tr style="font-weight:600;background:#f5f6f8"><td style="padding:5px 10px">TOTAL</td><td style="padding:5px 10px;text-align:right">864 h</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+        <div style="margin-bottom:32px">
+          <h2 style="font-size:15px;font-weight:700;color:#323338;margin-bottom:12px;
+                     padding-bottom:6px;border-bottom:2px solid #00a650">
+            6. People Provisioning
+          </h2>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tbody>
+            <tr style="">
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                <span style="color:#00a650;font-weight:600">✓ Pass</span></td>
+              <td style="padding:10px 12px;border-bottom:1px solid #e6e9ef">
+                13 consultants require monday.com user provisioning<ul style="margin:4px 0 0 16px;font-size:13px;color:#555"><li>Alex Kim</li><li>Amanda Foster</li><li>Chris Anderson</li><li>David Park</li><li>Emily Rodriguez</li><li>James Wilson</li><li>Jennifer Lee</li><li>Kevin Brown</li><li>Lisa Wang</li><li>Michael Torres</li><li>Rachel Martinez</li><li>Robert Chen</li><li>Sarah Chen</li></ul></td>
+            </tr></tbody>
+          </table>
+          
+        </div>
+  </div>
+
+  <p style="text-align:center;font-size:12px;color:#aaa;margin-top:24px">
+    Nexus Consulting Group · Smartsheet → monday.com Migration · 2026-05-06 22:04:46
+  </p>
+</div>
+</body>
+</html>
