@@ -201,6 +201,12 @@ def run_validation(manifest_path=None):
     chk(1, 'Engagement fields consistent across all CSV rows',
         not src_inconsistencies, [f'Inconsistent: {e}' for e in src_inconsistencies])
 
+    del_id_counts = {}
+    for d in src_dels:
+        del_id_counts[d['id']] = del_id_counts.get(d['id'], 0) + 1
+    dup_del_ids = [did for did, n in del_id_counts.items() if n > 1]
+    chk(1, 'No duplicate deliverable IDs in source CSV', not dup_del_ids, dup_del_ids)
+
     # --- Section 2: Status Validation ---
     bad_eng_s = [f'{i["name"]}: "{col_text(i, ec["status"])}"' for i in eng_items
                  if col_text(i, ec['status']) not in VALID_ENG_STATUSES]
@@ -340,6 +346,43 @@ def run_validation(manifest_path=None):
                     for d in src_dels if d['priority'] not in VALID_PRIORITIES]
     chk(5, 'All deliverable priorities are valid (High / Medium / Low)',
         not bad_priority, bad_priority)
+
+    zero_budget = [e['name'] for e in src_engs.values() if int(e['budget']) <= 0]
+    chk(5, 'All engagements have a positive budget', not zero_budget, zero_budget)
+
+    # Deliverable due dates that fall outside the parent engagement's window are a common
+    # artifact of historical migrations where date fields were shifted or mapped incorrectly.
+    out_of_window = []
+    for d in src_dels:
+        eng = src_engs[d['eng_id']]
+        if d['due_date'] < eng['start'] or d['due_date'] > eng['end']:
+            out_of_window.append(
+                f'{d["id"]} {d["name"]}: due {d["due_date"]} outside {eng["start"]} → {eng["end"]}')
+    chk(5, 'All deliverable due dates fall within their engagement window',
+        not out_of_window, out_of_window, advisory=bool(out_of_window))
+
+    # A completed engagement with open deliverables indicates a status was migrated
+    # without reconciling child records — common when source systems track these independently.
+    complete_with_open = []
+    for eng in src_engs.values():
+        if eng['status'] == 'Complete':
+            open_dels = [d['name'] for d in src_dels
+                         if d['eng_id'] == eng['id'] and d['status'] != 'Done']
+            for name in open_dels:
+                complete_with_open.append(f'{eng["name"]}: "{name}" is not Done')
+    chk(5, 'Complete engagements have all deliverables marked Done',
+        not complete_with_open, complete_with_open, advisory=bool(complete_with_open))
+
+    # A not-started engagement with active or completed deliverables suggests work began
+    # in the source system before the engagement record was formally opened.
+    not_started_with_work = []
+    for eng in src_engs.values():
+        if eng['status'] == 'Not started':
+            for d in src_dels:
+                if d['eng_id'] == eng['id'] and d['status'] in ('Done', 'In progress', 'In review'):
+                    not_started_with_work.append(f'{eng["name"]}: "{d["name"]}" is {d["status"]}')
+    chk(5, 'Not started engagements have no active or completed deliverables',
+        not not_started_with_work, not_started_with_work, advisory=bool(not_started_with_work))
 
     total_budget = sum(int(e['budget']) for e in src_engs.values())
     total_hours  = sum(int(d['hours']) for d in src_dels)
