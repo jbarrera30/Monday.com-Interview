@@ -168,7 +168,7 @@ def setup_engagements_board() -> tuple:
     return bid, cols
 
 
-def setup_deliverables_board(eng_board_id: str) -> tuple:
+def setup_deliverables_board() -> tuple:
     print('\n[2/4] Creating Deliverables board…')
     bid = create_board('Nexus — Deliverables')
 
@@ -229,7 +229,7 @@ def migrate_engagements(board_id: str, cols: dict, engagements: dict) -> dict:
 
 
 def migrate_deliverables(board_id: str, cols: dict, deliverables: list,
-                         eng_item_map: dict, engagements: dict):
+                         engagements: dict):
     print('\n[4/4] Migrating deliverables…')
 
     for d in deliverables:
@@ -257,10 +257,10 @@ def main():
     print(f'Source: {len(engagements)} engagements, {len(deliverables)} deliverables')
 
     eng_board_id, eng_cols = setup_engagements_board()
-    del_board_id, del_cols = setup_deliverables_board(eng_board_id)
+    del_board_id, del_cols = setup_deliverables_board()
 
     eng_item_map = migrate_engagements(eng_board_id, eng_cols, engagements)
-    migrate_deliverables(del_board_id, del_cols, deliverables, eng_item_map, engagements)
+    migrate_deliverables(del_board_id, del_cols, deliverables, engagements)
 
     # Persist all board/column/item IDs so validate.py can target the exact boards
     # created in this run without re-querying the API to discover them.
